@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerar links dos convidados</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root { --green:#34432E; --gold:#C2A36B; --cream:#F5EFE3; }
+        body { font-family:'Montserrat',sans-serif; background:var(--cream); color:#2C2C28; }
+        .font-display { font-family:'Playfair Display',serif; }
+    </style>
+</head>
+
+<body class="min-h-screen py-10 px-4">
+    <!--
+      ESTA PÁGINA É SÓ PARA VOCÊS (os noivos). NÃO envie ela aos convidados.
+      Use-a para gerar um link personalizado por convidado/família.
+      Cada link abre o convite mostrando o nome do convidado e o número de
+      convites reservados para ele.
+    -->
+    <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-8">
+            <h1 class="font-display text-4xl" style="color:var(--green)">Gerador de Links</h1>
+            <p class="mt-2 text-sm text-gray-600">Crie um link personalizado para cada convidado ou família. Esta página é só para vocês — não envie aos convidados.</p>
+        </div>
+
+        <!-- Endereço do site publicado -->
+        <div class="bg-white rounded-xl shadow p-5 mb-6">
+            <label class="block text-sm font-semibold mb-2" style="color:var(--green)">Endereço do convite publicado</label>
+            <input id="base-url" type="text" placeholder="https://seusite.netlify.app/"
+                   class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-[var(--green)]">
+            <p class="text-xs text-gray-500 mt-2">Cole aqui o link que você recebeu ao publicar (ex.: do Netlify). Enquanto não publicar, pode testar com o arquivo local — mas os links de WhatsApp só funcionam com um endereço https público.</p>
+        </div>
+
+        <!-- Adicionar convidado -->
+        <div class="bg-white rounded-xl shadow p-5 mb-6">
+            <div class="grid md:grid-cols-12 gap-3 items-end">
+                <div class="md:col-span-4">
+                    <label class="block text-sm font-semibold mb-2" style="color:var(--green)">Nome do convidado / família</label>
+                    <input id="g-name" type="text" placeholder="Ex.: Família Kleis  /  João e Maria"
+                           class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-[var(--green)]">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold mb-2" style="color:var(--green)">Adultos</label>
+                    <input id="g-adults" type="number" min="1" value="2"
+                           class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-[var(--green)]">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold mb-2" style="color:var(--green)">Crianças</label>
+                    <input id="g-children" type="number" min="0" value="0"
+                           class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-[var(--green)]">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold mb-2" style="color:var(--green)">Idioma</label>
+                    <select id="g-lang" class="w-full p-3 border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-[var(--green)]">
+                        <option value="pt">Português</option>
+                        <option value="en">Inglês</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <button onclick="addGuest()" class="w-full py-3 rounded-lg text-white font-semibold" style="background:var(--green)">Adicionar</button>
+                </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-3">Escolha o <b>idioma</b> que aquele convidado vai receber. Dica: casal = <b>2 adultos / 0 crianças</b>.</p>
+        </div>
+
+        <!-- Lista -->
+        <div id="list" class="space-y-3"></div>
+
+        <div id="empty" class="text-center text-gray-400 py-10">Nenhum convidado adicionado ainda.</div>
+    </div>
+
+    <script>
+        const guests = [];
+
+        function getBase() {
+            let base = (document.getElementById('base-url').value || '').trim();
+            if (!base) base = window.location.href.replace(/gerar-links\.html.*$/, 'index.html');
+            // garante que aponte para index.html
+            if (!/index\.html/.test(base)) {
+                base = base.replace(/\/?$/, '/') + 'index.html';
+            }
+            return base;
+        }
+
+        function buildLink(g) {
+            const base = getBase();
+            const sep = base.includes('?') ? '&' : '?';
+            let link = `${base}${sep}convidado=${encodeURIComponent(g.name)}&adultos=${g.adults}`;
+            if (g.children > 0) link += `&criancas=${g.children}`;
+            if (g.lang === 'en') link += `&lang=en`;
+            return link;
+        }
+        // link efetivo = curto (se já encurtado) ou o completo
+        function effectiveLink(g) { return g.short || buildLink(g); }
+
+        function addGuest() {
+            const name = (document.getElementById('g-name').value || '').trim();
+            const adults = parseInt(document.getElementById('g-adults').value || '0', 10);
+            const children = parseInt(document.getElementById('g-children').value || '0', 10);
+            const lang = document.getElementById('g-lang').value;
+            if (!name) { alert('Digite o nome do convidado.'); return; }
+            if (!Number.isFinite(adults) || adults < 1) { alert('Informe ao menos 1 adulto.'); return; }
+            const kids = (Number.isFinite(children) && children > 0) ? children : 0;
+            guests.push({ name, adults, children: kids, lang, short: '' });
+            document.getElementById('g-name').value = '';
+            document.getElementById('g-adults').value = '2';
+            document.getElementById('g-children').value = '0';
+            document.getElementById('g-name').focus();
+            render();
+        }
+
+        function removeGuest(i) { guests.splice(i, 1); render(); }
+
+        function copyLink(i) {
+            navigator.clipboard.writeText(effectiveLink(guests[i])).then(() => {
+                const btn = document.getElementById('copy-' + i);
+                if (btn) { const t = btn.innerHTML; btn.innerHTML = '<i class="fas fa-check"></i> Copiado!'; setTimeout(() => btn.innerHTML = t, 1500); }
+            });
+        }
+
+        // Encurta o link via is.gd (precisa do site publicado — link público https)
+        async function shortenLink(i) {
+            const long = buildLink(guests[i]);
+            if (long.startsWith('file://')) {
+                alert('Para encurtar, primeiro publique o site (o link precisa ser público, https). Cole a URL publicada no campo do topo e gere de novo.');
+                return;
+            }
+            const btn = document.getElementById('short-' + i);
+            const orig = btn.innerHTML; btn.innerHTML = 'Encurtando...'; btn.disabled = true;
+            try {
+                const r = await fetch('https://is.gd/create.php?format=simple&url=' + encodeURIComponent(long));
+                const short = (await r.text()).trim();
+                if (/^https?:\/\//.test(short)) { guests[i].short = short; render(); }
+                else throw new Error(short);
+            } catch (e) {
+                btn.innerHTML = orig; btn.disabled = false;
+                alert('Não consegui encurtar agora (' + (e.message || 'erro') + '). Use o link normal ou tente novamente.');
+            }
+        }
+
+        function shareWhatsApp(i) {
+            const g = guests[i];
+            const link = effectiveLink(g);
+            const msg = g.lang === 'en'
+                ? `Hi, ${g.name}! You're invited to our wedding 💛\n\nOpen the invitation and confirm your attendance:\n${link}`
+                : `Olá, ${g.name}! Você está convidado(a) para o nosso casamento 💛\n\nVeja o convite e confirme sua presença:\n${link}`;
+            window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+        }
+
+        function render() {
+            const list = document.getElementById('list');
+            document.getElementById('empty').style.display = guests.length ? 'none' : 'block';
+            list.innerHTML = '';
+            guests.forEach((g, i) => {
+                const link = effectiveLink(g);
+                const langBadge = g.lang === 'en'
+                    ? '<span class="text-xs px-2 py-0.5 rounded-full" style="background:#e0e7ff;color:#3730a3">EN</span>'
+                    : '<span class="text-xs px-2 py-0.5 rounded-full" style="background:#dcfce7;color:#166534">PT</span>';
+                const row = document.createElement('div');
+                row.className = 'bg-white rounded-xl shadow p-4';
+                row.innerHTML = `
+                    <div class="flex items-center justify-between gap-3 flex-wrap">
+                        <div>
+                            <p class="font-semibold flex items-center gap-2" style="color:var(--green)">${g.name} ${langBadge}</p>
+                            <p class="text-xs text-gray-500">${g.adults} adulto${g.adults > 1 ? 's' : ''}${g.children > 0 ? ` · ${g.children} criança${g.children > 1 ? 's' : ''}` : ''}${g.short ? ' · link curto ✓' : ''}</p>
+                        </div>
+                        <div class="flex gap-2 flex-wrap">
+                            <button id="copy-${i}" onclick="copyLink(${i})" class="py-2 px-3 rounded-lg text-sm font-semibold text-white" style="background:var(--gold)"><i class="fas fa-copy"></i> Copiar link</button>
+                            <button id="short-${i}" onclick="shortenLink(${i})" class="py-2 px-3 rounded-lg text-sm font-semibold text-gray-700 bg-gray-100"><i class="fas fa-link"></i> Encurtar</button>
+                            <button onclick="shareWhatsApp(${i})" class="py-2 px-3 rounded-lg text-sm font-semibold text-white" style="background:#25D366"><i class="fab fa-whatsapp"></i> Enviar</button>
+                            <button onclick="removeGuest(${i})" class="py-2 px-3 rounded-lg text-sm font-semibold text-gray-600 bg-gray-100"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <input readonly value="${link}" onclick="this.select()" class="w-full mt-3 p-2 text-xs border border-gray-200 rounded bg-gray-50 text-gray-600">
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        ['g-name', 'g-adults', 'g-children'].forEach(id => {
+            document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') addGuest(); });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nosso Casamento</title>
+
+    <!-- Prévia ao compartilhar (WhatsApp/redes). IMPORTANTE: troque "SEU-USUARIO" e o
+         caminho pela URL real depois de publicar no GitHub Pages, senão a foto não aparece. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Emanuela & Alexandre — Nosso Casamento" />
+    <meta property="og:description" content="Você está convidado(a)! 24 · 10 · 2026 · Curitiba, Paraná" />
+    <meta property="og:image" content="https://alexkleis.github.io/emanuela-e-alexandre/IMG_3443.JPG" />
+    <meta property="og:image:width" content="1600" />
+    <meta property="og:image:height" content="1200" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!--
+    ============================================================
+      COMO PERSONALIZAR ESTE CONVITE
+    ============================================================
+    1. Edite o bloco CONFIG no final deste arquivo (procure por
+       "const CONFIG = {"). Nomes, data, locais, pais, número do
+       WhatsApp e e-mail estão todos lá.
+    2. Para usar suas próprias fotos: coloque os arquivos de imagem
+       nesta pasta e substitua os espaços reservados (procure por
+       "PLACEHOLDER PHOTO" neste arquivo) por:
+       style="background-image:url('suafoto.jpg')" ou <img src="suafoto.jpg">.
+    3. Abra este arquivo no navegador para visualizar. Para publicar de
+       graça, arraste esta pasta para netlify.com/drop ou use o GitHub Pages.
+    Sem build, sem servidor, sem mensalidade. O arquivo é seu.
+    ============================================================
+    -->
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Fraunces (display) + Cormorant Garamond (serif) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome (ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        :root {
+            --paper:    #F7F2E7;  /* marfim quente — fundo */
+            --pinheiro: #1C1C1A;  /* carvão — tinta/títulos */
+            --musgo:    #4F4B45;  /* cinza-carvão suave */
+            --ouro:     #B0894F;  /* dourado-antigo base */
+            --ouro-luz: #E8CE94;  /* dourado realce */
+            --tinta:    #23271F;  /* quase-preto quente — corpo */
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background-color: var(--paper);
+            color: var(--tinta);
+            margin: 0;
+            overflow-x: hidden;
+            font-size: 1.08rem;
+        }
+
+        .font-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+        .font-serif-c { font-family: 'Cormorant Garamond', serif; }
+
+        /* Caixa-alta espaçada para rótulos */
+        .caps {
+            font-family: 'Cormorant Garamond', serif;
+            text-transform: uppercase;
+            letter-spacing: 0.32em;
+            font-weight: 600;
+        }
+
+        /* Dourado metálico via gradiente recortado no texto */
+        .gold-text {
+            background: linear-gradient(100deg, var(--ouro) 0%, var(--ouro-luz) 45%, var(--ouro) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Régua dourada fina */
+        .hairline { height: 1px; background: linear-gradient(90deg, transparent, var(--ouro) 50%, transparent); border: 0; }
+
+        /* Divisor com ramo de araucária central */
+        .branch-divider {
+            display: flex; align-items: center; justify-content: center;
+            gap: 1.25rem; margin: 2.5rem auto; max-width: 34rem; padding: 0 1rem;
+        }
+        .branch-divider .rule { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--ouro)); }
+        .branch-divider .rule.flip { background: linear-gradient(90deg, var(--ouro), transparent); }
+        .branch-divider svg { width: 64px; height: 32px; flex-shrink: 0; }
+
+        /* Texturas: grão de papel + leve vinheta, fixos e discretos */
+        .paper-grain {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none;
+            opacity: 0.04; mix-blend-mode: multiply;
+        }
+        .vignette {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none;
+            background: radial-gradient(ellipse at center, transparent 55%, rgba(22,22,20,0.10) 100%);
+        }
+
+        /* Espaços reservados (substitua por fotos reais — veja a nota no topo) */
+        .placeholder-photo {
+            background:
+                linear-gradient(135deg, rgba(26,26,24,0.92) 0%, rgba(26,26,24,0.78) 50%, rgba(22,22,20,0.92) 100%);
+            position: relative;
+        }
+        .placeholder-photo::after {
+            content: 'SUA FOTO AQUI';
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(232,206,148,0.65);
+            font-size: 0.68rem; letter-spacing: 0.3em;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* Animação ao rolar a página */
+        .observe-me {
+            opacity: 0; transform: translateY(34px);
+            transition: opacity 1s ease-out, transform 0.9s ease-out;
+        }
+        .observe-me.is-visible { opacity: 1; transform: none; }
+
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fade-in { animation: fade-in 0.35s ease-out; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+        @keyframes modal-pop {
+            from { opacity: 0; transform: translateY(26px) scale(0.95); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-card { animation: modal-pop 0.45s cubic-bezier(.2,.85,.25,1); }
+
+        /* Cartão de papel com fina borda dourada */
+        .card-paper {
+            background: linear-gradient(180deg, #FBF7EC 0%, var(--paper) 100%);
+            border: 1px solid rgba(176,137,79,0.35);
+            box-shadow: 0 14px 40px rgba(26,26,24,0.10);
+        }
+
+        /* Botão refinado retangular */
+        .btn-refined {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem;
+            border: 1px solid var(--ouro);
+            border-radius: 3px;
+            padding: 0.85rem 1.6rem;
+            font-family: 'Cormorant Garamond', serif;
+            text-transform: uppercase; letter-spacing: 0.22em; font-weight: 600; font-size: 0.9rem;
+            color: var(--pinheiro);
+            background: transparent;
+            cursor: pointer;
+            transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+        }
+        .btn-refined:hover { background: var(--pinheiro); color: var(--paper); border-color: var(--pinheiro); }
+        .btn-refined.on-dark { color: var(--ouro-luz); border-color: var(--ouro); }
+        .btn-refined.on-dark:hover { background: var(--ouro); color: var(--pinheiro); border-color: var(--ouro); }
+        .btn-refined.btn-wa {
+            border-color: #3f6b4a; color: #2f5238;
+        }
+        .btn-refined.btn-wa:hover { background: #3f6b4a; color: var(--paper); border-color: #3f6b4a; }
+
+        /* ====================== GALERIA CIRCULAR 3D ====================== */
+        .cg-stage {
+            width: 100%; height: 58vh; max-height: 560px; min-height: 340px;
+            display: flex; align-items: center; justify-content: center;
+            perspective: 1500px;
+            touch-action: pan-y;            /* permite rolar a página na vertical e arrastar na horizontal */
+            cursor: grab; user-select: none; -webkit-user-select: none;
+        }
+        .cg-stage:active { cursor: grabbing; }
+        .cg-ring {
+            position: relative; width: 100%; height: 100%;
+            transform-style: preserve-3d; will-change: transform;
+        }
+        .cg-card {
+            position: absolute; left: 50%; top: 50%;
+            border-radius: 10px; overflow: hidden;
+            box-shadow: 0 18px 42px rgba(22,22,20,0.45);
+            border: 1px solid rgba(232,206,148,0.25);
+            transition: opacity 0.25s linear;
+            backface-visibility: hidden;
+        }
+        .cg-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        /* Capa e rodapé — preenchem a tela (cover) com foco nos rostos */
+        #hero { background-size: cover; background-position: center 22%; background-color: #15140f; }
+        footer.thanks {
+            background-size: cover; background-position: center 28%; background-color: #15140f;
+            background-image: url('IMG_3913.jpg');          /* celular: retrato */
+        }
+        @media (min-width: 900px) {
+            footer.thanks {
+                background-image: url('B17590DA-2596-41A1-92F2-4FB27E9A277C.JPG');  /* desktop: paisagem */
+                background-position: center 45%;
+                min-height: 78vh;   /* faixa mais alta = mostra mais da foto (zoom out) */
+            }
+        }
+
+        /* Nome do casal empilhado na capa (Nome / & / Nome) */
+        #couple-name .cname { display: block; }
+        #couple-name .amp {
+            display: block; font-style: italic;
+            font-size: 0.58em; line-height: 1.05; margin: 0.03em 0;
+            color: var(--ouro-luz);
+        }
+
+        /* Foco visível em teclado */
+        a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible,
+        .rsvp-opt:focus-visible {
+            outline: 2px solid var(--ouro);
+            outline-offset: 3px;
+        }
+
+        /* ====================== ABERTURA: PORTAS QUE SE ABREM ====================== */
+        #envelope {
+            position: fixed; inset: 0; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: transparent;
+            cursor: pointer;
+        }
+        #envelope { transition: opacity 0.7s ease; }
+        #envelope.opening { pointer-events: none; }
+        #envelope.closing { opacity: 0; }
+        #envelope.gone { display: none; }
+
+        /* ===== ABERTURA: PAINÉIS QUE SE ABREM + SELO FLUTUANTE ===== */
+        /* Portas (PUERTA) — efeito VibeFly: deslizam para fora a partir do bico central */
+        .puerta {
+            position: absolute; top: 50%; left: 50%;
+            width: 101%; height: 101%; object-fit: cover; object-position: center;
+            z-index: 1; pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: transform 1.1s cubic-bezier(.76,0,.24,1);
+        }
+        .puerta-r { transform: translate(-50%, -50%) scaleX(-1); }
+        #envelope.opening .puerta-l { transform: translate(50%, -50%); }
+        #envelope.opening .puerta-r { transform: translate(-150%, -50%) scaleX(-1); }
+
+        /* selo flutuante */
+        .seal-float { position: relative; z-index: 4; animation: seal-bob 3.2s ease-in-out infinite; }
+        @keyframes seal-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+        .env-seal {
+            display: flex; align-items: center; justify-content: center;
+            width: 150px; height: 150px; border-radius: 50%; color: var(--ouro-luz);
+            background: radial-gradient(circle at 36% 30%, #3f3d38 0%, #1c1c1a 62%, #0e0e0c 100%);
+            box-shadow: inset 0 0 26px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(232,206,148,0.18), 0 14px 30px rgba(22,22,20,0.45);
+            position: relative;
+        }
+        .env-seal::before { content: ''; position: absolute; inset: 8px; border-radius: 50%; border: 1px solid rgba(232,206,148,0.55); }
+        .env-seal svg { width: 128px; height: 128px; display: block; }
+
+        /* abertura: selo dá zoom e some; nome e dica somem rápido; painéis abrem */
+        @keyframes scale-out-center { 0% { transform: scale(1); opacity: 1; } 45% { transform: scale(1.18); opacity: 1; } 100% { transform: scale(0.15); opacity: 0; } }
+        #envelope.opening .seal-float { animation: scale-out-center 0.85s cubic-bezier(.5,0,.6,1) forwards; }
+        #envelope.opening #env-greeting,
+        #envelope.opening .open-hint { opacity: 0; transition: opacity 0.4s ease; }
+
+        .open-hint { position: relative; z-index: 5; transition: opacity 0.5s ease; }
+
+        /* Botão de música */
+        #music-toggle {
+            position: fixed; bottom: 18px; right: 18px; z-index: 60;
+            width: 46px; height: 46px; border-radius: 50%;
+            display: none; align-items: center; justify-content: center;
+            background: var(--pinheiro); color: var(--ouro-luz);
+            box-shadow: 0 6px 18px rgba(22,22,20,0.35); cursor: pointer;
+            border: 1px solid rgba(232,206,148,0.4);
+        }
+        #music-toggle.show { display: flex; }
+
+        #main { display: none; position: relative; z-index: 2; }
+        #main.show { display: block; }
+
+        /* Numerais da contagem com hairlines verticais */
+        .cd-cell { position: relative; text-align: center; padding: 0 0.5rem; }
+        .cd-cell + .cd-cell::before {
+            content: ''; position: absolute; left: 0; top: 14%; bottom: 14%;
+            width: 1px; background: linear-gradient(180deg, transparent, var(--ouro-luz), transparent);
+        }
+
+        /* Botões de opção da confirmação */
+        .rsvp-opt {
+            border: 1px solid rgba(176,137,79,0.4); border-radius: 4px; padding: 16px;
+            cursor: pointer; transition: all 0.25s; background: rgba(255,255,255,0.4); text-align: center;
+        }
+        .rsvp-opt.sel-yes { border-color: var(--musgo); background: rgba(74,72,66,0.12); }
+        .rsvp-opt.sel-no  { border-color: #b07a6a; background: rgba(176,122,106,0.10); }
+
+        /* Campos de formulário refinados */
+        .field {
+            width: 100%; padding: 0.8rem 0.9rem;
+            background: rgba(255,255,255,0.55);
+            border: 1px solid rgba(176,137,79,0.4); border-radius: 4px;
+            font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; color: var(--tinta);
+        }
+        .field:focus { outline: none; border-color: var(--pinheiro); }
+
+        /* Reduz movimento conforme preferência do sistema */
+        @media (prefers-reduced-motion: reduce) {
+            .observe-me { opacity: 1 !important; transform: none !important; transition: none !important; }
+            .door, .seal-float, .open-hint, #env-greeting, #envelope { transition: none !important; animation: none !important; }
+            .animate-fade-in { animation: none; }
+            * { scroll-behavior: auto !important; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Texturas discretas -->
+    <svg class="paper-grain" xmlns="http://www.w3.org/2000/svg">
+        <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter>
+        <rect width="100%" height="100%" filter="url(#grain)"/>
+    </svg>
+    <div class="vignette"></div>
+
+    <!-- Emblema reutilizável: ramo de araucária + pinhão (definição SVG) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <defs>
+            <!-- Ramo simples de araucária (Pinheiro-do-Paraná): galho central com agulhas pareadas -->
+            <g id="arauc-branch">
+                <g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                    <path d="M32 4 V 60"/>
+                    <path d="M32 12 L 20 6"/><path d="M32 12 L 44 6"/>
+                    <path d="M32 22 L 17 15"/><path d="M32 22 L 47 15"/>
+                    <path d="M32 32 L 15 26"/><path d="M32 32 L 49 26"/>
+                    <path d="M32 42 L 18 37"/><path d="M32 42 L 46 37"/>
+                    <path d="M32 51 L 23 48"/><path d="M32 51 L 41 48"/>
+                </g>
+                <!-- Pinhão estilizado na ponta -->
+                <ellipse cx="32" cy="62" rx="4" ry="5.5" fill="currentColor" opacity="0.85"/>
+            </g>
+        </defs>
+    </svg>
+
+    <!-- ABERTURA DO CONVITE (envelope abrindo) -->
+    <div id="envelope">
+        <!-- Saudação com o nome do convidado (vem do link ?convidado=...) -->
+        <div id="env-greeting" style="display:none; position:relative; z-index:5; text-align:center; margin-bottom:2rem;">
+            <p class="caps text-xs" style="color:var(--musgo)">Convite especial para</p>
+            <p id="env-guest" class="font-display" style="color:var(--pinheiro); font-size:1.95rem; line-height:1.15; margin-top:0.4rem;"></p>
+        </div>
+
+        <!-- Portas (PUERTA) que se abrem para os lados — efeito VibeFly -->
+        <img src="PUERTA.png" class="puerta puerta-l" alt="" aria-hidden="true">
+        <img src="PUERTA.png" class="puerta puerta-r" alt="" aria-hidden="true">
+
+        <!-- Selo de cera flutuante (dá zoom e some ao abrir) -->
+        <div class="seal-float">
+            <span class="env-seal" aria-hidden="true">
+                <svg viewBox="0 0 120 120">
+                    <defs>
+                        <linearGradient id="seal-gold" x1="0" y1="0" x2="0.2" y2="1">
+                            <stop offset="0"    stop-color="#F6E7BC"/>
+                            <stop offset="0.42" stop-color="#E0C173"/>
+                            <stop offset="0.7"  stop-color="#C49C4B"/>
+                            <stop offset="1"    stop-color="#9C7838"/>
+                        </linearGradient>
+                        <path id="seal-top-arc" d="M 23,60 A 37,37 0 0 1 97,60"/>
+                        <path id="seal-bot-arc" d="M 26,60 A 34,34 0 0 0 94,60"/>
+                    </defs>
+                    <circle cx="60" cy="60" r="53" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-dasharray="0.4 4.15" stroke-linecap="round" opacity="0.6"/>
+                    <circle cx="60" cy="60" r="46.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.45"/>
+                    <text fill="currentColor" font-family="'Cormorant Garamond', serif" font-size="5.9" font-weight="600" letter-spacing="0.35">
+                        <textPath id="seal-top" href="#seal-top-arc" startOffset="50%" text-anchor="middle">EMANUELA &amp; ALEXANDRE</textPath>
+                    </text>
+                    <text fill="currentColor" font-family="'Cormorant Garamond', serif" font-size="8" font-weight="600" letter-spacing="2.4">
+                        <textPath id="seal-date" href="#seal-bot-arc" startOffset="50%" text-anchor="middle">24 · 10 · 2026</textPath>
+                    </text>
+                    <path d="M 13.5,60 l 2.2,-2.2 2.2,2.2 -2.2,2.2 z" fill="currentColor"/>
+                    <path d="M 102.1,60 l 2.2,-2.2 2.2,2.2 -2.2,2.2 z" fill="currentColor"/>
+                    <text y="72.4" text-anchor="middle" font-family="'Fraunces', serif" fill="#0c0c0b" opacity="0.5">
+                        <tspan x="60.7">
+                            <tspan id="seal-i1b" font-size="42" font-weight="600">E</tspan>
+                            <tspan font-size="27" font-style="italic" font-weight="400" dx="1" dy="-4">&amp;</tspan>
+                            <tspan id="seal-i2b" font-size="42" font-weight="600" dx="1" dy="4">A</tspan>
+                        </tspan>
+                    </text>
+                    <text y="71.6" text-anchor="middle" font-family="'Fraunces', serif" fill="url(#seal-gold)">
+                        <tspan x="60">
+                            <tspan id="seal-i1" font-size="42" font-weight="600">E</tspan>
+                            <tspan font-size="27" font-style="italic" font-weight="400" dx="1" dy="-4">&amp;</tspan>
+                            <tspan id="seal-i2" font-size="42" font-weight="600" dx="1" dy="4">A</tspan>
+                        </tspan>
+                    </text>
+                </svg>
+            </span>
+        </div>
+
+        <p class="open-hint caps mt-10 text-xs" style="color:var(--musgo)">Toque para abrir o convite</p>
+    </div>
+
+    <!-- CONVITE PRINCIPAL -->
+    <div id="main">
+        <!-- MENU -->
+        <nav class="fixed top-0 left-0 right-0 z-50 py-3 px-4 border-b"
+             style="background-color: rgba(26,26,24,0.96); border-color: rgba(176,137,79,0.4);">
+            <div class="container mx-auto flex justify-center gap-6">
+                <button onclick="scrollToSection('hero')" class="caps text-[0.7rem] transition py-1 px-2" style="color:var(--ouro-luz)">Início</button>
+                <button onclick="scrollToSection('locations')" class="caps text-[0.7rem] transition py-1 px-2" style="color:var(--ouro-luz)">Detalhes</button>
+                <button onclick="scrollToSection('rsvp')" class="caps text-[0.7rem] transition py-1 px-2" style="color:var(--ouro-luz)">Presença</button>
+            </div>
+        </nav>
+
+        <!-- CAPA -->
+        <section id="hero" class="min-h-screen w-full flex flex-col justify-center items-center relative overflow-hidden py-24" style="color:var(--paper); background-image:url('IMG_3266.JPG')">
+            <div class="absolute inset-0" style="z-index:1; background:rgba(18,18,17,0.5)"></div>
+            <!-- moldura dourada interna -->
+            <div class="absolute pointer-events-none" style="inset:18px; border:1px solid rgba(232,206,148,0.4); z-index:2"></div>
+            <div class="relative z-10 text-center px-4 flex flex-col items-center">
+                <p class="caps text-xs md:text-sm mb-4" style="color:var(--ouro-luz)">Nosso casamento</p>
+                <h1 id="couple-name" class="font-display text-5xl md:text-7xl" style="font-weight:500; letter-spacing:0.01em">Nomes &amp; Nomes</h1>
+
+                <div class="mt-6 flex items-center gap-4" style="color:var(--ouro-luz)">
+                    <span class="h-px w-12" style="background:rgba(232,206,148,0.6)"></span>
+                    <svg width="44" height="22" viewBox="0 0 64 78" aria-hidden="true" style="color:var(--ouro-luz)"><use href="#arauc-branch"/></svg>
+                    <span class="h-px w-12" style="background:rgba(232,206,148,0.6)"></span>
+                </div>
+
+                <div class="mt-6">
+                    <p id="hero-date" class="caps text-lg md:text-xl" style="letter-spacing:0.18em">Data</p>
+                    <p id="hero-place" class="font-serif-c italic text-lg md:text-xl mt-2" style="color:var(--ouro-luz)">Local</p>
+                </div>
+
+                <!-- CONTAGEM REGRESSIVA -->
+                <div class="mt-12 w-full max-w-2xl">
+                    <div id="time-up" class="font-display text-3xl mb-6" style="display:none">O grande dia chegou!</div>
+                    <div class="grid grid-cols-4">
+                        <div class="cd-cell">
+                            <div class="font-display text-4xl md:text-6xl" style="font-weight:500" id="cd-days">00</div>
+                            <div class="caps text-[0.6rem] md:text-xs mt-3" style="color:var(--ouro-luz)">dias</div>
+                        </div>
+                        <div class="cd-cell">
+                            <div class="font-display text-4xl md:text-6xl" style="font-weight:500" id="cd-hours">00</div>
+                            <div class="caps text-[0.6rem] md:text-xs mt-3" style="color:var(--ouro-luz)">horas</div>
+                        </div>
+                        <div class="cd-cell">
+                            <div class="font-display text-4xl md:text-6xl" style="font-weight:500" id="cd-mins">00</div>
+                            <div class="caps text-[0.6rem] md:text-xs mt-3" style="color:var(--ouro-luz)">minutos</div>
+                        </div>
+                        <div class="cd-cell">
+                            <div class="font-display text-4xl md:text-6xl" style="font-weight:500" id="cd-secs">00</div>
+                            <div class="caps text-[0.6rem] md:text-xs mt-3" style="color:var(--ouro-luz)">segundos</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONVITE / BÊNÇÃO -->
+        <section class="py-20 observe-me">
+            <div class="container mx-auto px-4 text-center max-w-3xl">
+                <div class="branch-divider">
+                    <span class="rule flip"></span>
+                    <svg viewBox="0 0 64 78" style="color:var(--ouro)" aria-hidden="true"><use href="#arauc-branch"/></svg>
+                    <span class="rule"></span>
+                </div>
+                <p class="font-serif-c text-2xl md:text-3xl leading-relaxed" style="color:var(--tinta)">
+                    Com a bênção de Deus e de nossos pais, temos a alegria de convidá-lo(a) para celebrar o nosso casamento.
+                </p>
+            </div>
+        </section>
+
+        <!-- PAIS DOS NOIVOS -->
+        <section class="pb-20">
+            <div class="container mx-auto px-4 text-center max-w-4xl">
+                <div class="grid md:grid-cols-2 gap-10 relative">
+                    <div class="font-serif-c observe-me">
+                        <h3 class="caps text-sm mb-4 gold-text">Pais da noiva</h3>
+                        <div id="parents-bride" class="text-xl space-y-1" style="color:var(--pinheiro)"></div>
+                    </div>
+                    <div class="font-serif-c observe-me">
+                        <h3 class="caps text-sm mb-4 gold-text">Pais do noivo</h3>
+                        <div id="parents-groom" class="text-xl space-y-1" style="color:var(--pinheiro)"></div>
+                    </div>
+                </div>
+                <div class="branch-divider mt-12">
+                    <span class="rule flip"></span>
+                    <svg viewBox="0 0 64 78" style="color:var(--ouro)" aria-hidden="true"><use href="#arauc-branch"/></svg>
+                    <span class="rule"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOCAIS -->
+        <section id="locations" class="py-20">
+            <div class="container mx-auto px-4">
+                <h2 class="font-display text-4xl md:text-5xl text-center mb-12 observe-me" style="color:var(--pinheiro); font-weight:500">Locais</h2>
+                <div class="space-y-10 max-w-4xl mx-auto">
+                    <!-- Cerimônia -->
+                    <div class="card-paper rounded overflow-hidden flex flex-col md:flex-row observe-me">
+                        <!-- PLACEHOLDER PHOTO -->
+                        <div class="w-full md:w-2/5 h-56 md:h-auto bg-cover bg-center" style="background-image:url('00338081.jpg')"></div>
+                        <div class="p-8 flex flex-col justify-center items-center text-center w-full md:w-3/5">
+                            <h3 class="font-display text-3xl mb-2" style="color:var(--pinheiro); font-weight:500">Cerimônia</h3>
+                            <h4 id="cer-name" class="font-serif-c text-2xl font-semibold mb-1" style="color:var(--tinta)">Nome do Local</h4>
+                            <p id="cer-time" class="caps text-xs mb-3 gold-text">Horário</p>
+                            <p id="cer-addr" class="mb-5 text-lg">Endereço</p>
+                            <a id="cer-map" href="#" target="_blank" rel="noopener" class="btn-refined">Como chegar</a>
+                        </div>
+                    </div>
+                    <!-- Recepção -->
+                    <div class="card-paper rounded overflow-hidden flex flex-col md:flex-row observe-me">
+                        <!-- PLACEHOLDER PHOTO -->
+                        <div class="w-full md:w-2/5 h-56 md:h-auto bg-cover bg-center" style="background-image:url('BoscoEventos.jpg')"></div>
+                        <div class="p-8 flex flex-col justify-center items-center text-center w-full md:w-3/5">
+                            <h3 class="font-display text-3xl mb-2" style="color:var(--pinheiro); font-weight:500">Recepção</h3>
+                            <h4 id="rec-name" class="font-serif-c text-2xl font-semibold mb-1" style="color:var(--tinta)">Nome do Local</h4>
+                            <p id="rec-time" class="caps text-xs mb-3 gold-text">Horário</p>
+                            <p id="rec-addr" class="mb-5 text-lg">Endereço</p>
+                            <a id="rec-map" href="#" target="_blank" rel="noopener" class="btn-refined">Como chegar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROGRAMAÇÃO -->
+        <section class="py-20">
+            <div class="container mx-auto px-4 text-center">
+                <h2 class="font-display text-4xl md:text-5xl mb-14 observe-me" style="color:var(--pinheiro); font-weight:500">Programação</h2>
+                <div class="relative max-w-2xl mx-auto" id="schedule-list">
+                    <div class="absolute h-full top-0 left-1/2 -translate-x-1/2" style="width:1px; background:linear-gradient(180deg, transparent, var(--ouro), transparent)"></div>
+                    <!-- Os itens da programação são gerados a partir de CONFIG.schedule -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TRAJE -->
+        <section class="py-20 text-center">
+            <div class="container mx-auto px-4">
+                <h2 class="font-display text-4xl md:text-5xl mb-10 observe-me" style="color:var(--pinheiro); font-weight:500">Traje</h2>
+                <div class="flex flex-col md:flex-row items-stretch justify-center gap-8 max-w-3xl mx-auto">
+                    <div class="flex-1 p-8 rounded card-paper observe-me">
+                        <div class="text-4xl mb-4 gold-text"><i class="fas fa-user-tie"></i></div>
+                        <h3 class="font-display text-3xl mb-1" style="color:var(--pinheiro); font-weight:500">Homens</h3>
+                        <p id="dc-men" class="text-xl">Passeio completo</p>
+                    </div>
+                    <div class="flex-1 p-8 rounded card-paper observe-me">
+                        <div class="text-4xl mb-4 gold-text"><i class="fas fa-vihara"></i></div>
+                        <h3 class="font-display text-3xl mb-1" style="color:var(--pinheiro); font-weight:500">Mulheres</h3>
+                        <p id="dc-women" class="text-xl">Vestido longo</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NOSSA HISTÓRIA -->
+        <section class="py-20 observe-me">
+            <div class="container mx-auto px-4">
+                <h2 class="font-display text-4xl md:text-5xl text-center mb-10" style="color:var(--pinheiro); font-weight:500">Nossa História</h2>
+                <div class="mx-auto rounded mb-8 bg-cover" style="width:100%; max-width:42rem; aspect-ratio:16/10; box-shadow:0 18px 50px rgba(26,26,24,0.18); background-image:url('IMG_3443.JPG'); background-position:center 35%"></div>
+                <div class="max-w-2xl mx-auto p-10 rounded card-paper">
+                    <p id="story-text" class="text-center text-xl leading-relaxed" style="color:var(--tinta)">
+                        A nossa história vai aqui.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- GALERIA CIRCULAR 3D (arraste para girar) -->
+        <section class="py-20 overflow-hidden">
+            <div class="container mx-auto px-4 text-center mb-8">
+                <h2 class="font-display text-4xl md:text-5xl" style="color:var(--pinheiro); font-weight:500">Nossos Momentos</h2>
+            </div>
+            <div class="cg-stage" id="cg-stage">
+                <div class="cg-ring" id="cg-ring"></div>
+            </div>
+        </section>
+
+        <!-- HASHTAG -->
+        <section class="py-20 text-center observe-me">
+            <div class="container mx-auto px-4 max-w-2xl">
+                <div class="branch-divider">
+                    <span class="rule flip"></span>
+                    <svg viewBox="0 0 64 78" style="color:var(--ouro)" aria-hidden="true"><use href="#arauc-branch"/></svg>
+                    <span class="rule"></span>
+                </div>
+                <div class="text-5xl gold-text mb-5"><i class="fas fa-camera-retro"></i></div>
+                <h2 id="hashtag" class="font-display text-4xl md:text-5xl mb-4" style="color:var(--pinheiro); font-weight:500">#hashtag</h2>
+                <p class="text-lg" style="color:var(--tinta)">
+                    Compartilhe conosco todas as fotos do nosso casamento! Use a hashtag acima nas suas publicações no Instagram e Facebook.
+                </p>
+            </div>
+        </section>
+
+        <!-- PRESENTES -->
+        <section class="py-20 text-center observe-me">
+            <div class="container mx-auto px-4 max-w-2xl">
+                <h2 class="font-display text-4xl md:text-5xl mb-4" style="color:var(--pinheiro); font-weight:500">Presentes</h2>
+                <p class="text-lg mb-8" style="color:var(--tinta)">
+                    A sua presença já é o nosso maior presente. Mas se quiser nos abençoar com um carinho a mais, ficaremos muito felizes com uma contribuição via PIX.
+                </p>
+                <div class="card-paper rounded p-8 inline-block">
+                    <div class="text-4xl gold-text mb-3"><i class="fas fa-hand-holding-heart"></i></div>
+                    <h3 class="font-display text-2xl mb-4" style="color:var(--pinheiro)">PIX</h3>
+                    <button onclick="openPix()" class="btn-refined">Ver dados do PIX</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESERVE A DATA -->
+        <section class="py-20 text-center observe-me">
+            <div class="container mx-auto px-4">
+                <div class="branch-divider">
+                    <span class="rule flip"></span>
+                    <svg viewBox="0 0 64 78" style="color:var(--ouro)" aria-hidden="true"><use href="#arauc-branch"/></svg>
+                    <span class="rule"></span>
+                </div>
+                <p class="text-xl mb-6">Adicione o evento à sua agenda:</p>
+                <button onclick="openSaveDate()" class="btn-refined">
+                    <i class="far fa-calendar-alt"></i> Reserve a data
+                </button>
+            </div>
+        </section>
+
+        <!-- CONFIRMAÇÃO DE PRESENÇA -->
+        <section id="rsvp" class="py-20 text-center">
+            <div class="container mx-auto px-4 max-w-lg">
+                <h2 class="font-display text-4xl mb-3" style="color:var(--pinheiro); font-weight:500">Confirme Sua Presença</h2>
+                <p class="mb-2 text-lg">A sua presença é o nosso maior presente. Por favor, avise se poderá nos acompanhar.</p>
+                <p id="rsvp-deadline" class="caps text-xs mb-8 gold-text"></p>
+
+                <div class="rounded card-paper p-6 md:p-8 text-left">
+                    <div id="rsvp-form">
+                    <!-- Saudação personalizada (aparece quando o link tem ?convidado=...) -->
+                    <div id="rsvp-greeting" class="mb-5 p-4 rounded text-center" style="background:rgba(74,72,66,0.12); border:1px solid rgba(176,137,79,0.35); display:none">
+                        <p id="rsvp-hello" class="font-serif-c text-2xl" style="color:var(--pinheiro)"></p>
+                        <p id="rsvp-passes" class="text-sm mt-1"></p>
+                    </div>
+
+                    <!-- Nome do convidado (some quando o link já traz o nome) -->
+                    <div id="rsvp-name-field">
+                        <label class="block caps text-xs mb-2" style="color:var(--musgo)">Seu nome</label>
+                        <input id="rsvp-guest" type="text" placeholder="Nome completo" class="field mb-5">
+                    </div>
+
+                    <!-- Vai comparecer? -->
+                    <div class="grid grid-cols-2 gap-4 mb-5">
+                        <div id="opt-yes" class="rsvp-opt" onclick="RSVP.setAttending(true)" tabindex="0" role="button" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();RSVP.setAttending(true)}">
+                            <i class="fas fa-check text-2xl mb-2" style="color:var(--musgo)"></i>
+                            <p class="font-semibold text-lg" style="color:var(--tinta)">Sim, vou comparecer</p>
+                        </div>
+                        <div id="opt-no" class="rsvp-opt" onclick="RSVP.setAttending(false)" tabindex="0" role="button" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();RSVP.setAttending(false)}">
+                            <i class="fas fa-times text-2xl mb-2" style="color:#b07a6a"></i>
+                            <p class="font-semibold text-lg" style="color:var(--tinta)">Não poderei ir</p>
+                        </div>
+                    </div>
+
+                    <!-- Contadores de adultos e crianças (pré-preenchidos pelo link; só aparecem se confirmar) -->
+                    <div id="rsvp-count" style="display:none" class="mb-5 space-y-3">
+                        <!-- Adultos -->
+                        <div id="rsvp-adults-row" class="flex items-center justify-between p-4 rounded" style="background:rgba(255,255,255,0.5); border:1px solid rgba(176,137,79,0.3)">
+                            <span class="font-semibold text-lg" style="color:var(--pinheiro)"><i class="fas fa-user mr-2 gold-text"></i>Adultos</span>
+                            <div class="flex items-center gap-3">
+                                <button onclick="RSVP.adjust('adults',-1)" class="w-9 h-9 rounded-full font-bold" style="background:rgba(74,72,66,0.18); color:var(--pinheiro)" aria-label="Menos um adulto">−</button>
+                                <span id="rsvp-adults" class="w-10 text-center font-semibold text-lg">1</span>
+                                <button onclick="RSVP.adjust('adults',1)" class="w-9 h-9 rounded-full font-bold" style="background:rgba(74,72,66,0.18); color:var(--pinheiro)" aria-label="Mais um adulto">+</button>
+                            </div>
+                        </div>
+                        <!-- Crianças (oculto quando o convite não reserva crianças) -->
+                        <div id="rsvp-children-row" class="flex items-center justify-between p-4 rounded" style="background:rgba(255,255,255,0.5); border:1px solid rgba(176,137,79,0.3)">
+                            <span class="font-semibold text-lg" style="color:var(--pinheiro)"><i class="fas fa-child mr-2 gold-text"></i>Crianças</span>
+                            <div class="flex items-center gap-3">
+                                <button onclick="RSVP.adjust('children',-1)" class="w-9 h-9 rounded-full font-bold" style="background:rgba(74,72,66,0.18); color:var(--pinheiro)" aria-label="Menos uma criança">−</button>
+                                <span id="rsvp-children" class="w-10 text-center font-semibold text-lg">0</span>
+                                <button onclick="RSVP.adjust('children',1)" class="w-9 h-9 rounded-full font-bold" style="background:rgba(74,72,66,0.18); color:var(--pinheiro)" aria-label="Mais uma criança">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mensagem -->
+                    <label class="block caps text-xs mb-2" style="color:var(--musgo)">Mensagem para nós (opcional)</label>
+                    <textarea id="rsvp-msg" rows="3" placeholder="Um recado para os noivos..." class="field mb-6 resize-none"></textarea>
+
+                    <!-- Botão único de confirmação -->
+                    <button id="rsvp-submit" onclick="RSVP.submit()" class="btn-refined w-full" style="font-size:0.95rem; padding:1rem">Confirmar presença</button>
+                    <p id="rsvp-hint" class="text-center text-sm mt-4" style="color:var(--musgo)">Selecione uma opção acima e confirme.</p>
+                    </div><!-- /rsvp-form -->
+
+                    <!-- Tela de sucesso -->
+                    <div id="rsvp-success" style="display:none" class="text-center py-6">
+                        <div class="text-5xl gold-text mb-4"><i class="fas fa-circle-check"></i></div>
+                        <p id="rsvp-success-title" class="font-display text-3xl mb-2" style="color:var(--pinheiro); font-weight:500">Presença confirmada!</p>
+                        <p id="rsvp-success-msg" class="text-lg" style="color:var(--tinta)">Obrigado! Mal podemos esperar para celebrar com vocês.</p>
+                        <p id="rsvp-success-summary" class="text-sm mt-3" style="color:var(--musgo)"></p>
+                        <button id="rsvp-edit" onclick="RSVP.edit()" class="btn-refined mt-5" style="display:none">Editar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RODAPÉ -->
+        <footer class="thanks py-24 relative overflow-hidden" style="color:var(--paper)">
+            <div class="absolute inset-0" style="z-index:1; background:rgba(18,18,17,0.62)"></div>
+            <div class="container mx-auto px-4 text-center relative z-10">
+                <svg width="56" height="28" viewBox="0 0 64 78" class="mx-auto mb-5" style="color:var(--ouro-luz)" aria-hidden="true"><use href="#arauc-branch"/></svg>
+                <h2 class="font-display text-4xl md:text-5xl" style="color:var(--paper); font-weight:500">Obrigado!</h2>
+                <p class="font-serif-c text-xl md:text-2xl mt-3" style="color:var(--ouro-luz)">Por fazer parte da nossa história</p>
+                <p id="footer-name" class="font-display text-3xl mt-6" style="color:var(--paper); font-weight:500">Nomes &amp; Nomes</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- MODAL RESERVE A DATA -->
+    <div id="savedate-modal" class="fixed inset-0 flex justify-center items-center z-50 animate-fade-in" style="display:none; background:rgba(18,18,17,0.6)" onclick="closeSaveDate()">
+        <div class="rounded p-8 max-w-md w-full mx-4 relative card-paper modal-card" onclick="event.stopPropagation()">
+            <button onclick="closeSaveDate()" class="absolute top-3 right-4 text-3xl font-light" style="color:var(--musgo)">&times;</button>
+            <h3 class="font-display text-3xl mb-4" style="color:var(--pinheiro); font-weight:500">Reserve a Data</h3>
+            <p class="mb-6 text-lg">Adicione o nosso casamento à sua agenda para não esquecer.</p>
+            <div class="flex flex-col gap-3">
+                <a id="cal-google" href="#" target="_blank" class="btn-refined">Google Agenda</a>
+                <a id="cal-outlook" href="#" target="_blank" class="btn-refined">Outlook</a>
+                <a id="cal-ics" href="#" download="casamento.ics" class="btn-refined">Apple / Universal (.ics)</a>
+                <a id="cal-yahoo" href="#" target="_blank" class="btn-refined">Yahoo Agenda</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PIX -->
+    <div id="pix-modal" class="fixed inset-0 flex justify-center items-center z-50 animate-fade-in" style="display:none; background:rgba(18,18,17,0.6)" onclick="closePix()">
+        <div class="rounded p-8 max-w-md w-full mx-4 relative card-paper text-center modal-card" onclick="event.stopPropagation()">
+            <button onclick="closePix()" class="absolute top-3 right-4 text-3xl font-light" style="color:var(--musgo)">&times;</button>
+            <div class="text-4xl gold-text mb-3"><i class="fas fa-qrcode"></i></div>
+            <h3 class="font-display text-3xl mb-5" style="color:var(--pinheiro); font-weight:500">Dados do PIX</h3>
+            <div class="text-left text-lg space-y-2 mb-6">
+                <p><span class="caps text-xs" style="color:var(--musgo)">Chave</span><br><strong id="pix-key" style="color:var(--pinheiro); word-break:break-all"></strong></p>
+                <p><span class="caps text-xs" style="color:var(--musgo)">Favorecido</span><br><strong id="pix-name" style="color:var(--pinheiro)"></strong></p>
+                <p id="pix-bank-wrap"><span class="caps text-xs" style="color:var(--musgo)">Banco</span><br><strong id="pix-bank" style="color:var(--pinheiro)"></strong></p>
+            </div>
+            <button onclick="copyPix()" id="pix-copy" class="btn-refined"><i class="fas fa-copy"></i> Copiar chave</button>
+        </div>
+    </div>
+
+    <!-- MÚSICA DE FUNDO -->
+    <audio id="bg-music" src="musica.mp3" loop preload="auto"></audio>
+    <!-- destino oculto do envio da confirmação para a planilha (evita problemas de CORS) -->
+    <iframe name="rsvp-sink" title="rsvp" style="display:none"></iframe>
+    <button id="music-toggle" aria-label="Ligar ou desligar a música" title="Música">
+        <i class="fas fa-volume-xmark"></i>
+    </button>
+
+    <script>
+        /* ============================================================
+           CONFIG — EDITE TUDO AQUI
+           ============================================================ */
+        const CONFIG = {
+            // Casal (a ordem aqui é a que aparece na página)
+            coupleNames: "Emanuela & Alexandre",
+
+            // Data e horário (24h). Formato: YYYY, MM (1-12), DD, HH, MM
+            date: { year: 2026, month: 10, day: 24, hour: 16, minute: 0 },
+            dateLabel: "Sábado · 24 de Outubro · 2026",   // exibido abaixo dos nomes
+            placeLabel: "Curitiba · Paraná",
+
+            // Pais dos noivos
+            parents: {
+                groom: ["Leopoldo Kleis", "Erica Dallago Kleis"],
+                bride: ["Eliseu dos Santos", "Leonir Teresinha Garbossa dos Santos"]
+            },
+
+            // Confirmação de presença → Planilha do Google (cole aqui a URL do Web App do Apps Script)
+            // Veja as instruções no fim deste arquivo (comentário "COMO LIGAR A PLANILHA").
+            googleSheetUrl: "https://script.google.com/macros/s/AKfycbzmSym9Cort4t5qtaJjKvmk6hK4AaVqWeGIrkkXT86u8BG7skJkQzggdK9p9oF2-X0vdg/exec",
+
+            rsvpDeadline: "Por favor, confirme até 24 de setembro de 2026",
+            maxGuests: 6,
+
+            // Cerimônia
+            ceremony: {
+                name: "Igreja São Vicente de Paulo",
+                time: "16:00",
+                address: "Av. Jaime Reis, 531 — São Francisco, Curitiba — PR",
+                mapsUrl: "https://www.google.com/maps/search/?api=1&query=Igreja+S%C3%A3o+Vicente+de+Paulo+Av+Jaime+Reis+531+Curitiba+PR"
+            },
+            // Recepção
+            reception: {
+                name: "Villa Bosco — Clube Três Marias",
+                time: "18:30",
+                address: "Av. Três Marias, 274 — São Braz, Curitiba — PR",
+                mapsUrl: "https://www.google.com/maps/search/?api=1&query=Villa+Bosco+Av+Tr%C3%AAs+Marias+274+Curitiba+PR"
+            },
+
+            // Programação (icon = classe do Font Awesome)
+            schedule: [
+                { icon: "fa-church",        time: "16:00",  label: "Cerimônia" },
+                { icon: "fa-glass-cheers",  time: "18:30",  label: "Recepção" },
+                { icon: "fa-utensils",      time: "20:30",  label: "Jantar" },
+                { icon: "fa-music",         time: "22:00",  label: "Festa" }
+            ],
+
+            // Traje
+            dressCodeMen: "Passeio completo",
+            dressCodeWomen: "Vestido longo",
+
+            // Nossa história
+            story: "A nossa história começou no dia em que nos conhecemos, e desde então tem sido uma grande aventura. Substitua este texto pela história de vocês — como se conheceram, um momento especial e por que mal podem esperar para dizer 'sim'.",
+
+            // Hashtag das fotos do casamento
+            hashtag: "#ManuEAle",
+
+            // Presentes via PIX
+            pix: {
+                key: "emanuelacsantos@gmail.com",     // CPF, e-mail, telefone ou chave aleatória
+                name: "Emanuela C. Santos",
+                bank: ""                              // opcional (deixe "" para ocultar)
+            }
+        };
+        /* ============================================================
+           FIM DO CONFIG — normalmente não é preciso editar abaixo
+           ============================================================ */
+
+        // ---------- Idioma (PT padrão; EN quando o link tem ?lang=en) ----------
+        const LANG = (new URLSearchParams(location.search).get('lang') === 'en') ? 'en' : 'pt';
+        const TR = {
+            "Convite especial para": "A special invitation for",
+            "Toque para abrir o convite": "Tap to open the invitation",
+            "Início": "Home", "Detalhes": "Details", "Presença": "RSVP",
+            "Nosso casamento": "Our wedding",
+            "Sábado · 24 de Outubro · 2026": "Saturday · October 24 · 2026",
+            "dias": "days", "horas": "hours", "minutos": "minutes", "segundos": "seconds",
+            "O grande dia chegou!": "The big day is here!",
+            "Com a bênção de Deus e de nossos pais, temos a alegria de convidá-lo(a) para celebrar o nosso casamento.": "With the blessing of God and our parents, we joyfully invite you to celebrate our wedding.",
+            "Pais da noiva": "Bride's parents", "Pais do noivo": "Groom's parents",
+            "Locais": "Locations", "Cerimônia": "Ceremony", "Recepção": "Reception",
+            "Como chegar": "Get directions", "Programação": "Schedule",
+            "Jantar": "Dinner", "Festa": "Party",
+            "Traje": "Dress code", "Homens": "Men", "Mulheres": "Women",
+            "Passeio completo": "Formal attire", "Vestido longo": "Long dress",
+            "Nossa História": "Our Story", "Nossos Momentos": "Our Moments",
+            "arraste para girar": "drag to spin",
+            "Compartilhe conosco todas as fotos do nosso casamento! Use a hashtag acima nas suas publicações no Instagram e Facebook.": "Share all your photos from our wedding with us! Use the hashtag above on your Instagram and Facebook posts.",
+            "Presentes": "Gifts",
+            "A sua presença já é o nosso maior presente. Mas se quiser nos abençoar com um carinho a mais, ficaremos muito felizes com uma contribuição via PIX.": "Your presence is already our greatest gift. But if you'd like to bless us a little more, we'd be delighted with a contribution via PIX (Brazil's instant transfer).",
+            "Ver dados do PIX": "View PIX details", "Dados do PIX": "PIX details",
+            "Chave": "Key", "Favorecido": "Recipient", "Banco": "Bank",
+            "Copiar chave": "Copy key", "Chave copiada!": "Key copied!",
+            "Adicione o evento à sua agenda:": "Add the event to your calendar:",
+            "Reserve a data": "Save the date", "Reserve a Data": "Save the Date",
+            "Adicione o nosso casamento à sua agenda para não esquecer.": "Add our wedding to your calendar so you don't forget.",
+            "Google Agenda": "Google Calendar", "Yahoo Agenda": "Yahoo Calendar",
+            "Confirme Sua Presença": "Confirm Your Attendance",
+            "A sua presença é o nosso maior presente. Por favor, avise se poderá nos acompanhar.": "Your presence is our greatest gift. Please let us know if you'll be able to join us.",
+            "Por favor, confirme até 24 de setembro de 2026": "Please confirm by September 24, 2026",
+            "Seu nome": "Your name", "Nome completo": "Full name",
+            "Sim, vou comparecer": "Yes, I'll attend", "Não poderei ir": "I can't make it",
+            "Adultos": "Adults", "Crianças": "Children",
+            "Mensagem para nós (opcional)": "Message for us (optional)",
+            "Um recado para os noivos...": "A note for the couple...",
+            "Confirmar presença": "Confirm attendance",
+            "Editar": "Edit",
+            "Selecione uma opção acima e confirme.": "Select an option above, then confirm.",
+            "Confira os números e toque em Confirmar presença.": "Check the numbers and tap Confirm attendance.",
+            "Toque em Confirmar presença para avisar que não poderá ir.": "Tap Confirm attendance to let us know you can't make it.",
+            "Enviando...": "Sending...",
+            "Presença confirmada!": "Attendance confirmed!",
+            "Obrigado! Mal podemos esperar para celebrar com vocês.": "Thank you! We can't wait to celebrate with you.",
+            "Que pena!": "We'll miss you!",
+            "Sentiremos a sua falta. Obrigado por nos avisar com carinho.": "We'll miss you. Thank you for letting us know.",
+            "Obrigado!": "Thank you!",
+            "Por fazer parte da nossa história": "For being part of our story"
+        };
+        function t(s) { return (LANG === 'en' && TR[s]) ? TR[s] : s; }
+        function translatePage() {
+            if (LANG !== 'en') return;
+            document.documentElement.lang = 'en';
+            document.querySelectorAll('#envelope *, #main *, #savedate-modal *, #pix-modal *').forEach(el => {
+                if (el.childElementCount === 0) {
+                    const key = (el.textContent || '').trim();
+                    if (TR[key]) el.textContent = TR[key];
+                }
+                const ph = el.getAttribute && el.getAttribute('placeholder');
+                if (ph && TR[ph.trim()]) el.setAttribute('placeholder', TR[ph.trim()]);
+            });
+        }
+
+        // ---------- Aplica o CONFIG na página ----------
+        const weddingDateObj = new Date(CONFIG.date.year, CONFIG.date.month - 1, CONFIG.date.day, CONFIG.date.hour, CONFIG.date.minute);
+        const weddingTime = weddingDateObj.getTime();
+
+        function setText(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+        function setAttr(id, attr, val) { const el = document.getElementById(id); if (el) el.setAttribute(attr, val); }
+
+        // Nome do casal na capa, empilhado: Nome / & / Nome
+        (function stackCoupleName() {
+            const el = document.getElementById('couple-name');
+            if (!el) return;
+            const parts = CONFIG.coupleNames.split('&').map(s => s.trim());
+            if (parts.length === 2) {
+                el.innerHTML = `<span class="cname">${parts[0]}</span><span class="amp">&amp;</span><span class="cname">${parts[1]}</span>`;
+            } else {
+                el.textContent = CONFIG.coupleNames;
+            }
+        })();
+        setText('env-couple', CONFIG.coupleNames);
+        setText('footer-name', CONFIG.coupleNames);
+        setText('hero-date', CONFIG.dateLabel);
+        setText('hero-place', CONFIG.placeLabel);
+        setText('rsvp-deadline', CONFIG.rsvpDeadline);
+        document.title = CONFIG.coupleNames + (LANG === 'en' ? " — Our Wedding" : " — Nosso Casamento");
+
+        setText('cer-name', CONFIG.ceremony.name);
+        setText('cer-time', CONFIG.ceremony.time);
+        setText('cer-addr', CONFIG.ceremony.address);
+        setAttr('cer-map', 'href', CONFIG.ceremony.mapsUrl);
+
+        setText('rec-name', CONFIG.reception.name);
+        setText('rec-time', CONFIG.reception.time);
+        setText('rec-addr', CONFIG.reception.address);
+        setAttr('rec-map', 'href', CONFIG.reception.mapsUrl);
+
+        setText('dc-men', CONFIG.dressCodeMen);
+        setText('dc-women', CONFIG.dressCodeWomen);
+        setText('story-text', CONFIG.story);
+        setText('hashtag', CONFIG.hashtag);
+
+        // PIX
+        setText('pix-key', CONFIG.pix.key);
+        setText('pix-name', CONFIG.pix.name);
+        if (CONFIG.pix.bank) { setText('pix-bank', CONFIG.pix.bank); }
+        else { const w = document.getElementById('pix-bank-wrap'); if (w) w.style.display = 'none'; }
+
+        // ---------- Selo: nomes no topo, iniciais (relevo) e data ----------
+        (function buildSeal() {
+            const parts = CONFIG.coupleNames.split('&').map(s => s.trim()).filter(Boolean);
+            if (parts.length === 2) {
+                const a = parts[0].charAt(0).toUpperCase();
+                const b = parts[1].charAt(0).toUpperCase();
+                ['seal-i1', 'seal-i1b'].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = a; });
+                ['seal-i2', 'seal-i2b'].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = b; });
+            }
+            const top = document.getElementById('seal-top');
+            if (top) top.textContent = CONFIG.coupleNames.toUpperCase();
+            const d = CONFIG.date;
+            const sd = document.getElementById('seal-date');
+            if (sd) sd.textContent = `${pad(d.day)} · ${pad(d.month)} · ${d.year}`;
+        })();
+
+        // ---------- Convidado específico (lido do link) ----------
+        // Cada convidado recebe um link com o nome e quantos lugares foram
+        // reservados no backoffice (adultos e crianças). Exemplos:
+        //   index.html?convidado=Família%20Kleis&adultos=4&criancas=2
+        //   index.html?convidado=João%20e%20Maria&adultos=2            (só o casal)
+        // Use a página "gerar-links.html" para criar esses links facilmente.
+        const _params = new URLSearchParams(window.location.search);
+        function _intParam(keys, fallback) {
+            for (const k of keys) {
+                const v = parseInt(_params.get(k) || '', 10);
+                if (Number.isFinite(v) && v >= 0) return v;
+            }
+            return fallback;
+        }
+        const GUEST = {
+            name: (_params.get('convidado') || _params.get('c') || '').trim(),
+            // adultos: usa ?adultos= ; se vier o antigo ?max= usa ele; senão 2
+            adults: Math.max(1, _intParam(['adultos', 'a'], _intParam(['max', 'n'], 2))),
+            // crianças: usa ?criancas= ; senão 0
+            children: _intParam(['criancas', 'k'], 0)
+        };
+
+        // Anima o nome do convidado letra por letra (moderno, porém clássico)
+        function animateName(el, name) {
+            if (!el) return;
+            el.innerHTML = '';
+            const chars = Array.from(name);
+            chars.forEach((ch, i) => {
+                const span = document.createElement('span');
+                span.textContent = ch === ' ' ? ' ' : ch;
+                span.style.display = 'inline-block';
+                span.style.opacity = '0';
+                span.style.filter = 'blur(12px)';
+                span.style.transform = 'translateY(10px) scale(1.04)';
+                span.style.transition = 'opacity 1.3s ease, filter 1.3s ease, transform 1.3s cubic-bezier(.2,.7,.2,1)';
+                span.style.transitionDelay = (0.5 + i * 0.09) + 's';
+                el.appendChild(span);
+            });
+            requestAnimationFrame(() => {
+                el.querySelectorAll('span').forEach(s => { s.style.opacity = '1'; s.style.filter = 'blur(0)'; s.style.transform = 'none'; });
+            });
+        }
+
+        (function applyGuest() {
+            if (GUEST.name) {
+                // Nome na abertura
+                document.getElementById('env-greeting').style.display = 'block';
+                animateName(document.getElementById('env-guest'), GUEST.name);
+
+                // Saudação na confirmação
+                document.getElementById('rsvp-greeting').style.display = 'block';
+                setText('rsvp-hello', `${LANG === 'en' ? 'Hi' : 'Olá'}, ${GUEST.name}!`);
+                let passes;
+                if (LANG === 'en') {
+                    passes = `We've reserved ${GUEST.adults} adult${GUEST.adults !== 1 ? 's' : ''}`;
+                    if (GUEST.children > 0) passes += ` and ${GUEST.children} child${GUEST.children !== 1 ? 'ren' : ''}`;
+                    passes += '.';
+                } else {
+                    passes = `Reservamos ${GUEST.adults} ${GUEST.adults === 1 ? 'adulto' : 'adultos'}`;
+                    if (GUEST.children > 0) passes += ` e ${GUEST.children} ${GUEST.children === 1 ? 'criança' : 'crianças'}`;
+                    passes += '.';
+                }
+                setText('rsvp-passes', passes);
+
+                // Já sabemos o nome — preenche e esconde o campo de nome
+                const input = document.getElementById('rsvp-guest');
+                if (input) input.value = GUEST.name;
+                const field = document.getElementById('rsvp-name-field');
+                if (field) field.style.display = 'none';
+            }
+        })();
+
+        // ---------- Pais ----------
+        (function buildParents() {
+            const g = document.getElementById('parents-groom');
+            const b = document.getElementById('parents-bride');
+            CONFIG.parents.groom.forEach(n => { const p = document.createElement('p'); p.textContent = n; g.appendChild(p); });
+            CONFIG.parents.bride.forEach(n => { const p = document.createElement('p'); p.textContent = n; b.appendChild(p); });
+        })();
+
+        // ---------- Programação (linha do tempo) ----------
+        (function buildSchedule() {
+            const list = document.getElementById('schedule-list');
+            CONFIG.schedule.forEach((item, i) => {
+                const left = i % 2 === 0;
+                const row = document.createElement('div');
+                row.className = 'relative my-8 observe-me';
+                row.innerHTML = `
+                    <div class="absolute w-4 h-4 rounded-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10" style="background:var(--paper);border:3px solid var(--ouro)"></div>
+                    <div class="w-[calc(50%-2rem)] ${left ? 'mr-auto' : 'ml-auto'}">
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="text-3xl gold-text"><i class="fas ${item.icon}"></i></div>
+                            <p class="caps text-xs" style="color:var(--musgo)">${item.time}</p>
+                            <p class="font-serif-c text-2xl" style="color:var(--pinheiro)">${item.label}</p>
+                        </div>
+                    </div>`;
+                list.appendChild(row);
+            });
+        })();
+
+        // ---------- Galeria circular 3D (arraste com o dedo/mouse + giro automático) ----------
+        (function circularGallery() {
+            // 16 fotos do casal (responsivo: tamanho e raio se ajustam à tela)
+            const photos = [
+                '1000006979.JPG',
+                '1000106014.JPG',
+                '1000107983.JPG',
+                '1000253524.JPG',
+                '1000255787.JPG',
+                'IMG_3319.JPG',
+                'IMG_3379.JPG',
+                'IMG_3508.JPG',
+                'IMG_3552.JPG',
+                'IMG_3696.JPG',
+                'IMG_3865.JPG',
+                'IMG_3879.JPG',
+                'IMG_4042.JPG',
+                'IMG_4064.JPG',
+                'IMG_4071.JPG',
+                'IMG_4106.JPG',
+                'IMG_8436.JPG',
+                'IMG_8445.JPG'
+            ];
+            const stage = document.getElementById('cg-stage');
+            const ring = document.getElementById('cg-ring');
+            if (!ring || !stage) return;
+
+            const N = photos.length;
+            const anglePer = 360 / N;
+            const cards = [];
+            let cardW, cardH, radius;
+
+            function dims() {
+                const w = window.innerWidth;
+                // cartão proporcional à tela; raio calculado para não sobrepor
+                cardW = Math.min(200, Math.max(120, w * 0.40));
+                cardH = cardW * 1.36;
+                radius = (cardW / 2) / Math.tan(Math.PI / N) * 1.12;
+            }
+            function layout() {
+                dims();
+                cards.forEach((card, i) => {
+                    card.style.width = cardW + 'px';
+                    card.style.height = cardH + 'px';
+                    card.style.marginLeft = (-cardW / 2) + 'px';
+                    card.style.marginTop = (-cardH / 2) + 'px';
+                    card.style.transform = `rotateY(${i * anglePer}deg) translateZ(${radius}px)`;
+                });
+            }
+            photos.forEach((src) => {
+                const card = document.createElement('div');
+                card.className = 'cg-card';
+                const img = document.createElement('img');
+                img.src = src; img.alt = 'Foto do casal'; img.loading = 'lazy'; img.draggable = false;
+                card.appendChild(img);
+                ring.appendChild(card);
+                cards.push(card);
+            });
+            layout();
+            window.addEventListener('resize', layout);
+
+            // Interação: arrastar (toque ou mouse) gira; ao soltar há inércia + giro automático lento
+            let rotation = 0, vel = 0, dragging = false, lastX = 0;
+            const AUTO = 0.05;
+
+            stage.addEventListener('pointerdown', (e) => {
+                dragging = true; lastX = e.clientX; vel = 0;
+            });
+            stage.addEventListener('pointermove', (e) => {
+                if (!dragging) return;
+                const dx = e.clientX - lastX; lastX = e.clientX;
+                const d = dx * 0.35;
+                rotation += d; vel = d;
+            });
+            function endDrag() { dragging = false; }
+            stage.addEventListener('pointerup', endDrag);
+            stage.addEventListener('pointercancel', endDrag);
+            stage.addEventListener('pointerleave', endDrag);
+
+            function frame() {
+                if (!dragging) {
+                    if (Math.abs(vel) > 0.02) { rotation += vel; vel *= 0.94; }
+                    else { vel = 0; rotation += AUTO; }
+                }
+                ring.style.transform = `rotateY(${rotation}deg)`;
+                const rmod = ((rotation % 360) + 360) % 360;
+                cards.forEach((card, i) => {
+                    let rel = (i * anglePer + rmod) % 360;
+                    const norm = Math.abs(rel > 180 ? 360 - rel : rel);
+                    card.style.opacity = Math.max(0.22, 1 - norm / 180);
+                });
+                requestAnimationFrame(frame);
+            }
+            requestAnimationFrame(frame);
+        })();
+
+        // ---------- Abertura do convite (portas que se abrem) + música ----------
+        const envelope = document.getElementById('envelope');
+        const main = document.getElementById('main');
+        const music = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-toggle');
+        let musicOn = false;
+        let opened = false;
+
+        function updateMusicIcon() {
+            musicBtn.innerHTML = musicOn
+                ? '<i class="fas fa-volume-high"></i>'
+                : '<i class="fas fa-volume-xmark"></i>';
+        }
+        function playMusic() {
+            return music.play().then(() => { musicOn = true; updateMusicIcon(); }).catch(() => {});
+        }
+        musicBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (musicOn) { music.pause(); musicOn = false; updateMusicIcon(); }
+            else { playMusic(); }
+        });
+
+        function openInvitation() {
+            if (opened) return; opened = true;
+            main.classList.add('show');          // conteúdo fica pronto atrás
+            envelope.classList.add('opening');   // aba abre, selo some, carta sai
+            musicBtn.classList.add('show');      // mostra o botão de música
+            playMusic();                         // inicia a música (gesto do usuário)
+            setTimeout(() => { envelope.classList.add('closing'); }, 950);   // dissolve restante
+            setTimeout(() => { envelope.classList.add('gone'); }, 1500);     // remove
+        }
+        envelope.addEventListener('click', openInvitation);
+
+        // ---------- Rolagem suave ----------
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ---------- Contagem regressiva ----------
+        function updateCountdown() {
+            const distance = weddingTime - Date.now();
+            if (distance > 0) {
+                const d = Math.floor(distance / 86400000);
+                const h = Math.floor((distance % 86400000) / 3600000);
+                const m = Math.floor((distance % 3600000) / 60000);
+                const s = Math.floor((distance % 60000) / 1000);
+                setText('cd-days', String(d).padStart(2, '0'));
+                setText('cd-hours', String(h).padStart(2, '0'));
+                setText('cd-mins', String(m).padStart(2, '0'));
+                setText('cd-secs', String(s).padStart(2, '0'));
+            } else {
+                document.getElementById('time-up').style.display = 'block';
+                ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => setText(id, '00'));
+            }
+        }
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // ---------- Animação ao rolar ----------
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) { e.target.classList.add('is-visible'); observer.unobserve(e.target); }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        document.querySelectorAll('.observe-me').forEach(el => observer.observe(el));
+
+        // ---------- Reserve a data (links de agenda) ----------
+        function pad(n) { return String(n).padStart(2, '0'); }
+        function toCalUTC(dt) {
+            return dt.getUTCFullYear() + pad(dt.getUTCMonth()+1) + pad(dt.getUTCDate()) + 'T' +
+                   pad(dt.getUTCHours()) + pad(dt.getUTCMinutes()) + '00Z';
+        }
+        (function buildCalendarLinks() {
+            const start = weddingDateObj;
+            const end = new Date(start.getTime() + 6 * 3600000); // +6h
+            const title = CONFIG.coupleNames + " — Casamento";
+            const details = "Venha celebrar o casamento de " + CONFIG.coupleNames + "!";
+            const loc = CONFIG.ceremony.name + ", " + CONFIG.ceremony.address;
+            const sUTC = toCalUTC(start), eUTC = toCalUTC(end);
+
+            setAttr('cal-google', 'href',
+                `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${sUTC}/${eUTC}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(loc)}`);
+            setAttr('cal-outlook', 'href',
+                `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(title)}&startdt=${start.toISOString()}&enddt=${end.toISOString()}&body=${encodeURIComponent(details)}&location=${encodeURIComponent(loc)}`);
+            setAttr('cal-yahoo', 'href',
+                `https://calendar.yahoo.com/?v=60&title=${encodeURIComponent(title)}&st=${sUTC}&et=${eUTC}&desc=${encodeURIComponent(details)}&in_loc=${encodeURIComponent(loc)}`);
+            const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${title}\nDTSTART:${sUTC}\nDTEND:${eUTC}\nDESCRIPTION:${details}\nLOCATION:${loc}\nEND:VEVENT\nEND:VCALENDAR`;
+            setAttr('cal-ics', 'href', 'data:text/calendar;charset=utf8,' + encodeURIComponent(ics));
+        })();
+
+        function openSaveDate() { document.getElementById('savedate-modal').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        function closeSaveDate() { document.getElementById('savedate-modal').style.display = 'none'; document.body.style.overflow = 'unset'; }
+
+        // ---------- Modal PIX ----------
+        function openPix() { document.getElementById('pix-modal').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        function closePix() { document.getElementById('pix-modal').style.display = 'none'; document.body.style.overflow = 'unset'; }
+        function copyPix() {
+            navigator.clipboard.writeText(CONFIG.pix.key).then(() => {
+                const b = document.getElementById('pix-copy');
+                const orig = b.innerHTML;
+                b.innerHTML = '<i class="fas fa-check"></i> ' + t('Chave copiada!');
+                setTimeout(() => { b.innerHTML = orig; }, 1800);
+            });
+        }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSaveDate(); closePix(); } });
+
+        // ---------- Confirmação (WhatsApp / E-mail) ----------
+        const RSVP = (function () {
+            let attending = null;
+            let adults = GUEST.adults;       // começa com o reservado no link
+            let children = GUEST.children;
+
+            // pré-preenche os contadores com o que veio do backoffice
+            setText('rsvp-adults', adults);
+            setText('rsvp-children', children);
+
+            // esconde a linha de crianças quando o convite não reserva crianças
+            if (GUEST.children === 0) {
+                const row = document.getElementById('rsvp-children-row');
+                if (row) row.style.display = 'none';
+            }
+            // se só há 1 adulto reservado, oculta os botões +/- de adultos
+            if (GUEST.adults === 1) {
+                document.querySelectorAll('#rsvp-adults-row button').forEach(b => b.style.display = 'none');
+            }
+
+            function setAttending(val) {
+                attending = val;
+                document.getElementById('opt-yes').classList.toggle('sel-yes', val === true);
+                document.getElementById('opt-no').classList.toggle('sel-no', val === false);
+                document.getElementById('rsvp-count').style.display = val === true ? 'block' : 'none';
+                document.getElementById('rsvp-hint').textContent = val
+                    ? t('Confira os números e toque em Confirmar presença.')
+                    : t('Toque em Confirmar presença para avisar que não poderá ir.');
+            }
+            function adjust(type, delta) {
+                if (type === 'adults') {
+                    adults = Math.max(1, Math.min(GUEST.adults, adults + delta));
+                    setText('rsvp-adults', adults);
+                } else {
+                    children = Math.max(0, Math.min(GUEST.children, children + delta));
+                    setText('rsvp-children', children);
+                }
+            }
+            const STORE_KEY = 'mw_rsvp_' + (GUEST.name || 'self').toLowerCase().replace(/\s+/g, '_');
+
+            function applyState(s) {
+                attending = s.attending;
+                adults = s.adults; children = s.children;
+                document.getElementById('opt-yes').classList.toggle('sel-yes', attending === true);
+                document.getElementById('opt-no').classList.toggle('sel-no', attending === false);
+                document.getElementById('rsvp-count').style.display = attending ? 'block' : 'none';
+                setText('rsvp-adults', adults);
+                setText('rsvp-children', children);
+                const msg = document.getElementById('rsvp-msg');
+                if (msg && s.note) msg.value = s.note;
+            }
+            function summaryText() {
+                if (!attending) return LANG === 'en' ? "You marked that you can't make it." : 'Você marcou que não poderá ir.';
+                if (LANG === 'en') {
+                    let s = `Confirmed: ${adults} adult${adults !== 1 ? 's' : ''}`;
+                    if (children > 0) s += ` · ${children} child${children !== 1 ? 'ren' : ''}`;
+                    return s;
+                }
+                let s = `Confirmado: ${adults} adulto${adults !== 1 ? 's' : ''}`;
+                if (children > 0) s += ` · ${children} criança${children !== 1 ? 's' : ''}`;
+                return s;
+            }
+            function showSuccess(already) {
+                document.getElementById('rsvp-form').style.display = 'none';
+                document.getElementById('rsvp-success').style.display = 'block';
+                if (attending) {
+                    setText('rsvp-success-title', already
+                        ? (LANG === 'en' ? 'You already confirmed!' : 'Você já confirmou!')
+                        : t('Presença confirmada!'));
+                    setText('rsvp-success-msg', t('Obrigado! Mal podemos esperar para celebrar com vocês.'));
+                } else {
+                    setText('rsvp-success-title', t('Que pena!'));
+                    setText('rsvp-success-msg', t('Sentiremos a sua falta. Obrigado por nos avisar com carinho.'));
+                }
+                setText('rsvp-success-summary', summaryText());
+                const editBtn = document.getElementById('rsvp-edit');
+                editBtn.textContent = t('Editar');
+                editBtn.style.display = 'inline-flex';
+            }
+            function edit() {
+                document.getElementById('rsvp-success').style.display = 'none';
+                document.getElementById('rsvp-form').style.display = 'block';
+                const btn = document.getElementById('rsvp-submit');
+                btn.disabled = false;
+                btn.textContent = t('Confirmar presença');
+            }
+            function sendToSheet(data) {
+                if (!CONFIG.googleSheetUrl) { console.warn('googleSheetUrl vazio — não gravado.'); return; }
+                const form = document.createElement('form');
+                form.action = CONFIG.googleSheetUrl;
+                form.method = 'POST';
+                form.target = 'rsvp-sink';   // resposta vai para o iframe oculto (sem CORS)
+                form.style.display = 'none';
+                Object.keys(data).forEach(k => {
+                    const inp = document.createElement('input');
+                    inp.type = 'hidden'; inp.name = k; inp.value = data[k];
+                    form.appendChild(inp);
+                });
+                document.body.appendChild(form);
+                form.submit();
+                setTimeout(() => form.remove(), 2000);
+            }
+            function submit() {
+                const name = (document.getElementById('rsvp-guest').value || '').trim();
+                const note = (document.getElementById('rsvp-msg').value || '').trim();
+                if (attending === null) { alert(LANG === 'en' ? 'Please choose "Yes" or "No" first.' : 'Escolha "Sim, vou comparecer" ou "Não poderei ir" primeiro.'); return; }
+                if (!name) { alert(LANG === 'en' ? 'Please enter your name.' : 'Por favor, digite o seu nome.'); return; }
+
+                const btn = document.getElementById('rsvp-submit');
+                btn.disabled = true;
+                btn.textContent = t('Enviando...');
+
+                sendToSheet({
+                    evento: CONFIG.coupleNames, nome: name,
+                    presenca: attending ? 'Sim' : 'Não',
+                    adultos: attending ? adults : 0,
+                    criancas: attending ? children : 0,
+                    mensagem: note, idioma: LANG,
+                    enviadoEm: new Date().toLocaleString('pt-BR')
+                });
+
+                try { localStorage.setItem(STORE_KEY, JSON.stringify({ attending, adults, children, note, name })); } catch (e) {}
+                setTimeout(() => showSuccess(false), 400);
+            }
+
+            // Se já confirmou antes (neste aparelho/navegador): mostra confirmado + botão Editar
+            (function restore() {
+                let saved = null;
+                try { saved = JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) {}
+                if (saved && typeof saved.attending === 'boolean') {
+                    applyState(saved);
+                    showSuccess(true);
+                }
+            })();
+
+            return { setAttending, adjust, submit, edit };
+        })();
+
+        // ---------- Aplica o idioma (EN) por último, depois de tudo montado ----------
+        translatePage();
+    </script>
+
+    <!--
+    ============================================================
+      COMO LIGAR A PLANILHA (confirmações de presença)
+    ============================================================
+    1) Crie uma Planilha no Google (sheets.new). Na 1ª linha, coloque os
+       cabeçalhos: Data | Nome | Presença | Adultos | Crianças | Mensagem | Evento
+    2) Menu "Extensões" → "Apps Script". Apague o conteúdo e cole isto:
+
+       function doPost(e) {
+         var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+         var p = e.parameter;
+         sheet.appendRow([
+           new Date(), p.nome || '', p.presenca || '',
+           p.adultos || '', p.criancas || '', p.mensagem || '', p.evento || ''
+         ]);
+         return ContentService.createTextOutput('OK');
+       }
+
+    3) Clique em "Implantar" → "Nova implantação" → engrenagem → "App da Web".
+       - Executar como: Eu (sua conta)
+       - Quem tem acesso: Qualquer pessoa
+       Clique em "Implantar" e autorize.
+    4) Copie a URL do App da Web (termina em /exec).
+    5) Cole essa URL no CONFIG, no campo googleSheetUrl: "https://script.google.com/macros/s/AKfycbzmSym9Cort4t5qtaJjKvmk6hK4AaVqWeGIrkkXT86u8BG7skJkQzggdK9p9oF2-X0vdg/exec"
+    Pronto! Cada "Confirmar presença" vira uma linha nova na planilha.
+    ============================================================
+    -->
+</body>
+
+</html>
