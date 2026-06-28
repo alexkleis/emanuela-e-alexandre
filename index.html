@@ -40,7 +40,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Great+Vibes&display=swap"
         rel="stylesheet">
 
     <!-- Font Awesome (ícones) -->
@@ -263,6 +263,22 @@
 
         .open-hint { position: relative; z-index: 5; transition: opacity 0.5s ease; }
 
+        /* Nome do convidado: caligrafia + reveal (desfoque some + brilho dourado varre) */
+        .name-script {
+            font-family: 'Great Vibes', cursive;
+            background: linear-gradient(105deg, var(--pinheiro) 36%, #C9A24B 50%, var(--pinheiro) 64%);
+            background-size: 250% 100%;
+            background-position: -60% 0;            /* repouso: carvão */
+            -webkit-background-clip: text; background-clip: text;
+            color: transparent; -webkit-text-fill-color: transparent;
+        }
+        .name-script.reveal { animation: name-in 2.4s cubic-bezier(.2,.72,.2,1) 0.35s both; }
+        @keyframes name-in {
+            0%   { opacity: 0; filter: blur(18px); transform: translateY(26px); background-position: 150% 0; }
+            48%  { opacity: 1; filter: blur(0);    transform: translateY(0);    background-position: 150% 0; }
+            100% { opacity: 1; filter: blur(0);    transform: translateY(0);    background-position: -60% 0; }
+        }
+
         /* Botão de música */
         #music-toggle {
             position: fixed; bottom: 18px; right: 18px; z-index: 60;
@@ -273,6 +289,34 @@
             border: 1px solid rgba(232,206,148,0.4);
         }
         #music-toggle.show { display: flex; }
+
+        /* Menu lateral (drawer) — celular */
+        #drawer-backdrop {
+            position: fixed; inset: 0; z-index: 65; background: rgba(18,18,17,0.55);
+            opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+            -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+        }
+        #drawer-backdrop.open { opacity: 1; visibility: visible; }
+        #drawer {
+            position: fixed; top: 0; right: 0; height: 100%; width: 78%; max-width: 300px; z-index: 70;
+            background: linear-gradient(160deg, #21201c 0%, #15140f 100%);
+            border-left: 1px solid rgba(176,137,79,0.4);
+            transform: translateX(100%); transition: transform 0.38s cubic-bezier(.5,0,.2,1);
+            display: flex; flex-direction: column; padding: 2.2rem 1.6rem;
+            box-shadow: -20px 0 50px rgba(0,0,0,0.4);
+        }
+        #drawer.open { transform: translateX(0); }
+        .drawer-close { position: absolute; top: 12px; right: 18px; font-size: 2rem; line-height: 1; color: var(--ouro-luz); background: none; border: none; cursor: pointer; }
+        .drawer-title { color: var(--ouro-luz); font-size: 1.9rem; font-weight: 600; margin: 0.3rem 0 1.8rem; }
+        .drawer-nav { display: flex; flex-direction: column; }
+        .drawer-nav a {
+            display: block; padding: 0.9rem 0; cursor: pointer; color: var(--paper);
+            font-family: 'Cormorant Garamond', serif; font-size: 1.45rem; letter-spacing: 0.02em;
+            border-bottom: 1px solid rgba(176,137,79,0.18);
+            transition: color 0.2s ease, padding-left 0.2s ease;
+        }
+        .drawer-nav a:hover { color: var(--ouro-luz); padding-left: 6px; }
+        @media (min-width: 768px) { #drawer, #drawer-backdrop { display: none; } }
 
         #main { display: none; position: relative; z-index: 2; }
         #main.show { display: block; }
@@ -304,7 +348,8 @@
         /* Reduz movimento conforme preferência do sistema */
         @media (prefers-reduced-motion: reduce) {
             .observe-me { opacity: 1 !important; transform: none !important; transition: none !important; }
-            .door, .seal-float, .open-hint, #env-greeting, #envelope { transition: none !important; animation: none !important; }
+            .door, .seal-float, .open-hint, #env-greeting, #envelope, .puerta { transition: none !important; animation: none !important; }
+            .name-script.reveal { animation: none !important; opacity: 1 !important; filter: none !important; }
             .animate-fade-in { animation: none; }
             * { scroll-behavior: auto !important; }
         }
@@ -342,7 +387,7 @@
     <div id="envelope">
         <!-- Saudação com o nome do convidado (vem do link ?convidado=...) -->
         <div id="env-greeting" style="display:none; position:relative; z-index:5; text-align:center; margin-bottom:2.4rem; padding:0 1rem;">
-            <p id="env-guest" class="font-display" style="color:var(--pinheiro); font-size:clamp(2.7rem, 12vw, 4.2rem); line-height:1.04; font-weight:500;"></p>
+            <p id="env-guest" class="name-script" style="font-size:clamp(3.2rem, 16vw, 5.6rem); line-height:1.05;"></p>
         </div>
 
         <!-- Portas (PUERTA) que se abrem para os lados — efeito VibeFly -->
@@ -400,12 +445,34 @@
         <!-- MENU -->
         <nav class="fixed top-0 left-0 right-0 z-50 py-3 px-4 border-b"
              style="background-color: rgba(26,26,24,0.96); border-color: rgba(176,137,79,0.4);">
-            <div class="container mx-auto flex justify-center gap-6">
-                <button onclick="scrollToSection('hero')" class="caps text-[0.7rem] transition py-1 px-2" style="color:var(--ouro-luz)">Início</button>
-                <button onclick="scrollToSection('locations')" class="caps text-[0.7rem] transition py-1 px-2" style="color:var(--ouro-luz)">Detalhes</button>
-                <button onclick="scrollToSection('rsvp')" class="caps text-[0.7rem] transition py-1 px-2" style="color:var(--ouro-luz)">Presença</button>
+            <div class="container mx-auto flex items-center justify-between md:justify-center">
+                <!-- monograma (só no celular) -->
+                <span class="font-display md:hidden" style="color:var(--ouro-luz); font-size:1.1rem; font-weight:600">E &amp; A</span>
+                <!-- links no topo (desktop) -->
+                <div class="hidden md:flex gap-6">
+                    <button onclick="scrollToSection('hero')" class="caps text-[0.7rem] transition py-1 px-2" style="color:var(--ouro-luz)">Início</button>
+                    <button onclick="scrollToSection('locations')" class="caps text-[0.7rem] transition py-1 px-2" style="color:var(--ouro-luz)">Detalhes</button>
+                    <button onclick="scrollToSection('rsvp')" class="caps text-[0.7rem] transition py-1 px-2" style="color:var(--ouro-luz)">Presença</button>
+                </div>
+                <!-- hambúrguer (só no celular) -->
+                <button class="md:hidden" onclick="openDrawer()" aria-label="Menu" style="color:var(--ouro-luz); font-size:1.25rem"><i class="fas fa-bars"></i></button>
             </div>
         </nav>
+
+        <!-- MENU LATERAL (celular) -->
+        <div id="drawer-backdrop" onclick="closeDrawer()"></div>
+        <aside id="drawer" aria-label="Menu">
+            <button onclick="closeDrawer()" aria-label="Fechar" class="drawer-close">&times;</button>
+            <p class="font-display drawer-title">E &amp; A</p>
+            <nav class="drawer-nav">
+                <a onclick="navTo('hero')">Início</a>
+                <a onclick="navTo('locations')">Locais</a>
+                <a onclick="navTo('programacao')">Programação</a>
+                <a onclick="navTo('momentos')">Nossos Momentos</a>
+                <a onclick="navTo('presentes')">Presentes</a>
+                <a onclick="navTo('rsvp')">Confirmar presença</a>
+            </nav>
+        </aside>
 
         <!-- CAPA -->
         <section id="hero" class="min-h-screen w-full flex flex-col justify-center items-center relative overflow-hidden py-24" style="color:var(--paper); background-image:url('IMG_3266.JPG')">
@@ -521,7 +588,7 @@
         </section>
 
         <!-- PROGRAMAÇÃO -->
-        <section class="py-20">
+        <section id="programacao" class="py-20">
             <div class="container mx-auto px-4 text-center">
                 <h2 class="font-display text-4xl md:text-5xl mb-14 observe-me" style="color:var(--pinheiro); font-weight:500">Programação</h2>
                 <div class="relative max-w-2xl mx-auto" id="schedule-list">
@@ -564,7 +631,7 @@
         </section>
 
         <!-- GALERIA CIRCULAR 3D (arraste para girar) -->
-        <section class="py-20 overflow-hidden">
+        <section id="momentos" class="py-20 overflow-hidden">
             <div class="container mx-auto px-4 text-center mb-8">
                 <h2 class="font-display text-4xl md:text-5xl" style="color:var(--pinheiro); font-weight:500">Nossos Momentos</h2>
             </div>
@@ -590,7 +657,7 @@
         </section>
 
         <!-- PRESENTES -->
-        <section class="py-20 text-center observe-me">
+        <section id="presentes" class="py-20 text-center observe-me">
             <div class="container mx-auto px-4 max-w-2xl">
                 <h2 class="font-display text-4xl md:text-5xl mb-4" style="color:var(--pinheiro); font-weight:500">Presentes</h2>
                 <p class="text-lg mb-8" style="color:var(--tinta)">
@@ -966,24 +1033,11 @@
         // Anima o nome do convidado letra por letra (moderno, porém clássico)
         function animateName(el, name) {
             if (!el) return;
-            el.innerHTML = '';
-            const chars = Array.from(name);
-            chars.forEach((ch, i) => {
-                const span = document.createElement('span');
-                span.textContent = ch === ' ' ? ' ' : ch;
-                span.style.display = 'inline-block';
-                if (ch === ' ') span.style.width = '0.3em';
-                span.style.opacity = '0';
-                span.style.filter = 'blur(16px)';
-                span.style.transform = 'translateY(' + ((i % 2 === 0 ? 1 : -1) * 34) + 'px) scale(1.55)';
-                span.style.textShadow = '0 0 24px rgba(232,206,148,0.9)';
-                span.style.transition = 'opacity 1.05s ease, filter 1.05s ease, transform 1.05s cubic-bezier(.16,.84,.26,1), text-shadow 1.3s ease';
-                span.style.transitionDelay = (0.45 + i * 0.12) + 's';
-                el.appendChild(span);
-            });
-            requestAnimationFrame(() => {
-                el.querySelectorAll('span').forEach(s => { s.style.opacity = '1'; s.style.filter = 'blur(0)'; s.style.transform = 'none'; s.style.textShadow = '0 0 0 rgba(232,206,148,0)'; });
-            });
+            el.classList.remove('reveal');
+            // força recalculo e dispara a animação CSS (robusto mesmo saindo de display:none)
+            void el.offsetWidth;
+            el.textContent = name;
+            requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.add('reveal'); }); });
         }
 
         (function applyGuest() {
@@ -1178,6 +1232,22 @@
             if (el) el.scrollIntoView({ behavior: 'smooth' });
         }
 
+        // ---------- Menu lateral (drawer) ----------
+        function openDrawer() {
+            document.getElementById('drawer').classList.add('open');
+            document.getElementById('drawer-backdrop').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeDrawer() {
+            document.getElementById('drawer').classList.remove('open');
+            document.getElementById('drawer-backdrop').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        function navTo(id) {
+            closeDrawer();
+            setTimeout(() => scrollToSection(id), 220);
+        }
+
         // ---------- Contagem regressiva ----------
         function updateCountdown() {
             const distance = weddingTime - Date.now();
@@ -1244,7 +1314,7 @@
                 setTimeout(() => { b.innerHTML = orig; }, 1800);
             });
         }
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSaveDate(); closePix(); } });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSaveDate(); closePix(); closeDrawer(); } });
 
         // ---------- Confirmação (WhatsApp / E-mail) ----------
         const RSVP = (function () {
