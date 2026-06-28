@@ -972,15 +972,17 @@
                 const span = document.createElement('span');
                 span.textContent = ch === ' ' ? ' ' : ch;
                 span.style.display = 'inline-block';
+                if (ch === ' ') span.style.width = '0.3em';
                 span.style.opacity = '0';
-                span.style.filter = 'blur(12px)';
-                span.style.transform = 'translateY(10px) scale(1.04)';
-                span.style.transition = 'opacity 1.3s ease, filter 1.3s ease, transform 1.3s cubic-bezier(.2,.7,.2,1)';
-                span.style.transitionDelay = (0.5 + i * 0.09) + 's';
+                span.style.filter = 'blur(16px)';
+                span.style.transform = 'translateY(' + ((i % 2 === 0 ? 1 : -1) * 34) + 'px) scale(1.55)';
+                span.style.textShadow = '0 0 24px rgba(232,206,148,0.9)';
+                span.style.transition = 'opacity 1.05s ease, filter 1.05s ease, transform 1.05s cubic-bezier(.16,.84,.26,1), text-shadow 1.3s ease';
+                span.style.transitionDelay = (0.45 + i * 0.12) + 's';
                 el.appendChild(span);
             });
             requestAnimationFrame(() => {
-                el.querySelectorAll('span').forEach(s => { s.style.opacity = '1'; s.style.filter = 'blur(0)'; s.style.transform = 'none'; });
+                el.querySelectorAll('span').forEach(s => { s.style.opacity = '1'; s.style.filter = 'blur(0)'; s.style.transform = 'none'; s.style.textShadow = '0 0 0 rgba(232,206,148,0)'; });
             });
         }
 
