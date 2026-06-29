@@ -33,16 +33,16 @@ Dois componentes, contrato simples entre eles:
 ### A) Apps Script (Web App, acesso "Qualquer pessoa")
 
 - **`doPost(e)`** — grava/atualiza e notifica:
-  1. **Upsert por nome** (normalizado: `trim().toLowerCase()`): se já existe linha
-     com aquele nome, atualiza-a; senão, cria nova.
+  1. **Upsert por `id`**: se já existe linha com aquele `id` (coluna J), atualiza-a;
+     senão, cria nova. (Se um link antigo vier sem `id`, cai no nome como fallback.)
   2. Grava também `Atualizado em` (agora) e o `Token` recebido (ver fluxo).
   3. **E-mail** via `MailApp.sendEmail` para os dois noivos (canal confiável).
   4. **WhatsApp** via `UrlFetchApp.fetch` ao CallMeBot, para cada número
      cadastrado — **dentro de try/catch**: qualquer erro do WhatsApp é ignorado e
      **não** afeta a gravação nem o e-mail.
   5. Retorna `OK` (texto simples).
-- **`doGet(e)`** — consulta (JSONP, já existe) e agora também devolve o `Token` e
-  `atualizadoEm` da linha, para a verificação ponta a ponta.
+- **`doGet(e)`** — consulta (JSONP, já existe), agora **por `id`** (`?action=check&id=...`),
+  e devolve também o `Token` e `atualizadoEm` da linha, para a verificação ponta a ponta.
 
 Config no topo do script (preenchida pelo usuário, **fora do repositório público**):
 ```
@@ -55,26 +55,36 @@ var WHATS = [
 
 ### B) Convite (módulo `RSVP` no `index.html`)
 
-- `submit()` vira **envio verificado com reenvio** (ver fluxo).
-- `restore()` (já consulta a planilha) permanece; passa a também restaurar
-  confirmações **pendentes** salvas localmente e tentar reenviá-las.
+- Lê o **`id` único do convidado** do link (`?id=...`), além de `convidado`,
+  `adultos`, `criancas`, `lang`. O `id` é a chave de gravação/consulta.
+- `submit()` vira **envio verificado com reenvio** (ver fluxo) e inclui o `id`.
+- `restore()` (já consulta a planilha) passa a consultar **por `id`**; também
+  restaura confirmações **pendentes** salvas localmente e tenta reenviá-las.
 - Novo estado de UI: "enviando…", "não consegui confirmar — tentar de novo"
   (com botão), além do "Presença confirmada!" e "Você já confirmou!".
 
+### C) Gerador de links (`gerar-links.html`)
+
+- Ao adicionar um convidado, gera um **`id` único e estável** (ex.: 8 caracteres
+  aleatórios `a–z0–9`) e o inclui no link: `...&id=<id>`.
+- O `id` acompanha o convidado em todos os botões (copiar/WhatsApp/encurtar).
+
 ## Modelo de dados (colunas da planilha)
 
-`Data | Nome | Presença | Adultos | Crianças | Mensagem | Evento | Atualizado em | Token`
+`Data(A) | Nome(B) | Presença(C) | Adultos(D) | Crianças(E) | Mensagem(F) | Evento(G) | Atualizado em(H) | Token(I) | Id(J)`
 
 - `Data` = primeira confirmação (não muda em edições).
 - `Atualizado em` = última edição.
 - `Token` = código único da última confirmação (usado para verificar a gravação).
+- `Id` = **chave do convidado** (vem do link, gerado pelo backoffice). É por ele que
+  o `doPost` faz upsert e o `doGet` consulta.
 
 ## Fluxo de dados — gravação verificada
 
 1. Convidado toca **Confirmar**. O cliente gera `token` aleatório e monta o payload
-   (nome, presença, adultos, crianças, mensagem, evento, **token**).
+   (**id**, nome, presença, adultos, crianças, mensagem, evento, **token**).
 2. Cliente **envia** (POST). Mostra "Enviando…".
-3. Cliente **confere** chamando `doGet` (JSONP): a linha daquele nome existe e o
+3. Cliente **confere** chamando `doGet` (JSONP) **pelo `id`**: a linha existe e o
    `Token` retornado **é igual** ao `token` enviado?
 4. **Sim** → mostra "Presença confirmada!", salva no `localStorage`, fim.
 5. **Não** → espera curta e tenta (passos 2–3) até **3 vezes** (backoff ~1.5s, 3s).
@@ -103,12 +113,14 @@ confirmação antiga).
 | WhatsApp (CallMeBot) falha | Ignorado (try/catch). Gravação e e-mail seguem normais. |
 | E-mail falha | Logado no Apps Script; não bloqueia a gravação. |
 | Convidado edita resposta | `doPost` atualiza a mesma linha; novo `token`; `doGet` confirma. |
-| Reabrir o link (outro aparelho/navegador) | `restore()` consulta a planilha e mostra "Você já confirmou!". |
+| Reabrir o link (outro aparelho/navegador) | `restore()` consulta a planilha **pelo `id`** e mostra "Você já confirmou!". |
 
 ## Limitações conhecidas (honestas)
 
-- **Chave = nome do convidado.** Dois convites com nome idêntico compartilhariam a
-  linha. Improvável num casamento; mitigável depois com um `id` único no link.
+- **Chave = `id` único do link.** O `id` é gerado pelo backoffice e é a identidade do
+  convidado — nomes iguais não colidem mais. Um link precisa **ter** o `id` para o
+  upsert funcionar; links gerados de agora em diante sempre terão. (Fallback: link
+  sem `id` cai no nome, só por segurança.)
 - **CallMeBot é serviço comunitário gratuito** (não oficial). Por isso é best-effort,
   com o e-mail como canal garantido.
 - **Sempre re-implantar** o Apps Script após editar (Nova implantação / Nova versão),
@@ -128,7 +140,7 @@ confirmação antiga).
 
 ## Passos operacionais para o usuário (uma vez)
 
-1. Acrescentar os cabeçalhos `Atualizado em` (coluna H) e `Token` (coluna I) na 1ª
+1. Acrescentar os cabeçalhos `Atualizado em` (H), `Token` (I) e `Id` (J) na 1ª
    linha da planilha. O `doPost` escreve nessas posições fixas.
 2. Colar o `doPost`+`doGet` novos no Apps Script e preencher e-mails/WhatsApp.
 3. Ativar o CallMeBot (cada noivo, uma vez) e colar as apikeys.
@@ -139,5 +151,4 @@ confirmação antiga).
 
 - Migração para Supabase/Firebase.
 - Painel/dashboard próprio (a planilha já serve).
-- `id` único por convidado (só se aparecer colisão de nomes).
 - Lembretes automáticos para quem não respondeu.
