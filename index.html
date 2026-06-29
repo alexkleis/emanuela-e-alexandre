@@ -1588,58 +1588,129 @@
     ============================================================
       COMO LIGAR A PLANILHA (confirmações de presença)
     ============================================================
-    1) Crie uma Planilha no Google (sheets.new). Na 1ª linha, coloque os
-       cabeçalhos: Data | Nome | Presença | Adultos | Crianças | Mensagem | Evento
-    2) Menu "Extensões" → "Apps Script". Apague o conteúdo e cole as DUAS funções
-       abaixo (doPost grava a confirmação; doGet permite o convite saber, ao reabrir
-       o link, se aquele convidado JÁ confirmou — mesmo em outro aparelho/navegador):
+    1) Crie uma Planilha no Google (sheets.new). Na 1ª linha, coloque os cabeçalhos
+       (10 colunas, A..J):
+       Data | Nome | Presença | Adultos | Crianças | Mensagem | Evento | Atualizado em | Token | Id
+    2) (WhatsApp opcional) Cada noivo, uma vez: enviar "I allow callmebot to send me
+       messages" para +34 644 51 95 23 (CallMeBot) e guardar a apikey recebida.
+    3) Menu "Extensões" → "Apps Script". Apague o conteúdo e cole TODO o código abaixo.
+       Preencha NOIVOS_EMAIL e as apikeys do WHATS (se for usar WhatsApp):
 
+       // ===== CONFIG (preencher) =====
+       var NOIVOS_EMAIL = ['alexkleis@gmail.com', 'emanuelacsantos@gmail.com'];
+       var WHATS = [
+         { phone: '5541999410707', apikey: 'COLOQUE_A_APIKEY_DO_ALEXANDRE' },
+         { phone: '5541XXXXXXXXX', apikey: 'COLOQUE_A_APIKEY_DA_EMANUELA' }
+       ];
+       // Colunas 1-based: A..J
+       var COL = { data:1, nome:2, presenca:3, adultos:4, criancas:5, mensagem:6, evento:7, atualizado:8, token:9, id:10 };
+
+       function sheet_() { return SpreadsheetApp.getActiveSpreadsheet().getSheets()[0]; }
+
+       function findRowById_(sh, id) {
+         if (!id) return -1;
+         var data = sh.getDataRange().getValues();
+         for (var i = 1; i < data.length; i++) {
+           if (String(data[i][COL.id - 1]).trim() === String(id).trim()) return i + 1;
+         }
+         return -1;
+       }
+       function findRowByName_(sh, nome) {
+         if (!nome) return -1;
+         var data = sh.getDataRange().getValues();
+         var alvo = String(nome).trim().toLowerCase();
+         for (var i = data.length - 1; i >= 1; i--) {
+           if (String(data[i][COL.nome - 1]).trim().toLowerCase() === alvo) return i + 1;
+         }
+         return -1;
+       }
+
+       // Grava/atualiza (upsert por id) e notifica.
        function doPost(e) {
-         var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
-         var p = e.parameter;
-         sheet.appendRow([
-           new Date(), p.nome || '', p.presenca || '',
-           p.adultos || '', p.criancas || '', p.mensagem || '', p.evento || ''
-         ]);
+         var p = (e && e.parameter) || {};
+         var sh = sheet_();
+         var agora = new Date();
+         var row = findRowById_(sh, p.id);
+         if (row < 0) row = findRowByName_(sh, p.nome); // fallback p/ links antigos sem id
+         if (row < 0) {
+           sh.appendRow([agora, p.nome || '', p.presenca || '', p.adultos || '', p.criancas || '',
+             p.mensagem || '', p.evento || '', agora, p.token || '', p.id || '']);
+         } else {
+           sh.getRange(row, COL.nome).setValue(p.nome || '');
+           sh.getRange(row, COL.presenca).setValue(p.presenca || '');
+           sh.getRange(row, COL.adultos).setValue(p.adultos || '');
+           sh.getRange(row, COL.criancas).setValue(p.criancas || '');
+           sh.getRange(row, COL.mensagem).setValue(p.mensagem || '');
+           sh.getRange(row, COL.evento).setValue(p.evento || '');
+           sh.getRange(row, COL.atualizado).setValue(agora);
+           sh.getRange(row, COL.token).setValue(p.token || '');
+           if (p.id) sh.getRange(row, COL.id).setValue(p.id);
+         }
+         notificar_(p);
          return ContentService.createTextOutput('OK');
        }
 
-       // Consulta se um convidado já confirmou (usado pelo convite via JSONP).
+       function notificar_(p) {
+         var resumo = 'Nome: ' + (p.nome || '') + '\n'
+           + 'Presenca: ' + (p.presenca || '') + '\n'
+           + 'Adultos: ' + (p.adultos || '0') + '\n'
+           + 'Criancas: ' + (p.criancas || '0') + '\n'
+           + 'Mensagem: ' + (p.mensagem || '(sem recado)');
+         try {
+           MailApp.sendEmail({
+             to: NOIVOS_EMAIL.join(','),
+             subject: 'RSVP ' + (p.presenca === 'Sim' ? '[SIM]' : '[NAO]') + ' - ' + (p.nome || ''),
+             body: resumo
+           });
+         } catch (err) { Logger.log('email falhou: ' + err); }
+         for (var i = 0; i < WHATS.length; i++) {
+           try {
+             var w = WHATS[i];
+             if (!w.apikey || w.apikey.indexOf('COLOQUE') === 0) continue;
+             var url = 'https://api.callmebot.com/whatsapp.php?phone=' + encodeURIComponent(w.phone)
+               + '&text=' + encodeURIComponent('Nova confirmacao:\n' + resumo)
+               + '&apikey=' + encodeURIComponent(w.apikey);
+             UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+           } catch (err2) { Logger.log('whats falhou: ' + err2); }
+         }
+       }
+
+       // Consulta por id (com fallback por nome). Devolve token p/ verificação ponta a ponta.
        function doGet(e) {
-         var p = e.parameter || {};
+         var p = (e && e.parameter) || {};
          var cb = p.callback || 'callback';
          var out = { confirmed: false };
-         if (p.action === 'check' && p.nome) {
-           var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
-           var data = sheet.getDataRange().getValues();
-           var alvo = String(p.nome).trim().toLowerCase();
-           for (var i = data.length - 1; i >= 1; i--) {   // de baixo p/ cima: pega a ÚLTIMA resposta
-             if (String(data[i][1]).trim().toLowerCase() === alvo) {
-               out = {
-                 confirmed: true,
-                 presenca: data[i][2], adultos: data[i][3],
-                 criancas: data[i][4], mensagem: data[i][5]
-               };
-               break;
-             }
+         if (p.action === 'check') {
+           var sh = sheet_();
+           var row = -1;
+           if (p.id) row = findRowById_(sh, p.id);
+           if (row < 0 && p.nome) row = findRowByName_(sh, p.nome);
+           if (row > 0) {
+             var v = sh.getRange(row, 1, 1, COL.id).getValues()[0];
+             out = {
+               confirmed: true,
+               presenca: v[COL.presenca - 1], adultos: v[COL.adultos - 1],
+               criancas: v[COL.criancas - 1], mensagem: v[COL.mensagem - 1],
+               token: v[COL.token - 1], atualizadoEm: v[COL.atualizado - 1]
+             };
            }
          }
-         return ContentService
-           .createTextOutput(cb + '(' + JSON.stringify(out) + ')')
+         return ContentService.createTextOutput(cb + '(' + JSON.stringify(out) + ')')
            .setMimeType(ContentService.MimeType.JAVASCRIPT);
        }
 
-    3) Clique em "Implantar" → "Nova implantação" → engrenagem → "App da Web".
+    4) Clique em "Implantar" → "Nova implantação" → engrenagem → "App da Web".
        - Executar como: Eu (sua conta)
        - Quem tem acesso: Qualquer pessoa
        Clique em "Implantar" e autorize.
        IMPORTANTE: sempre que editar o script, faça uma NOVA implantação
        (ou "Gerenciar implantações" → editar → Versão: Nova versão), senão as
-       mudanças (como o doGet) não entram no ar.
-    4) Copie a URL do App da Web (termina em /exec).
-    5) Cole essa URL no CONFIG, no campo googleSheetUrl: "https://script.google.com/macros/s/AKfycbzmSym9Cort4t5qtaJjKvmk6hK4AaVqWeGIrkkXT86u8BG7skJkQzggdK9p9oF2-X0vdg/exec"
-    Pronto! Cada "Confirmar presença" vira uma linha nova na planilha, e ao reabrir
-    o link o convite mostra "Você já confirmou!" consultando a própria planilha.
+       mudanças não entram no ar.
+    5) Copie a URL do App da Web (termina em /exec) e cole no CONFIG, em googleSheetUrl:
+       "https://script.google.com/macros/s/AKfycbzmSym9Cort4t5qtaJjKvmk6hK4AaVqWeGIrkkXT86u8BG7skJkQzggdK9p9oF2-X0vdg/exec"
+    Pronto! Cada confirmação vira/atualiza UMA linha por convidado (chave = Id), envia
+    e-mail aos noivos (+ WhatsApp se configurado), e o convite verifica a gravação pelo
+    token e mostra "Você já confirmou!" ao reabrir o link.
     ============================================================
     -->
 </body>
