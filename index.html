@@ -1139,7 +1139,11 @@
             }
             function layout() {
                 dims();
-                stage.style.height = (cardH + 56) + 'px';   /* palco abraça as fotos — sem vazio em cima/embaixo */
+                // A foto da frente é ampliada pela perspectiva; o palco precisa contê-la inteira
+                // (senão a foto principal fica cortada em cima/embaixo). P = perspective do .cg-stage.
+                const P = 1500;
+                const frontH = cardH * P / (P - radius);
+                stage.style.height = Math.round(frontH + 8) + 'px';
                 cards.forEach((card, i) => {
                     card.style.width = cardW + 'px';
                     card.style.height = cardH + 'px';
