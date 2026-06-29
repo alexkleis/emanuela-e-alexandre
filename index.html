@@ -318,6 +318,10 @@
         .drawer-nav a:hover { color: var(--ouro-luz); padding-left: 6px; }
         @media (min-width: 768px) { #drawer, #drawer-backdrop { display: none; } }
 
+        /* Nav: transparente no topo da página, fica sólida ao rolar */
+        #site-nav { background-color: transparent; border-color: transparent; transition: background-color 0.35s ease, border-color 0.35s ease; }
+        #site-nav.scrolled { background-color: rgba(26,26,24,0.96); border-color: rgba(176,137,79,0.4); }
+
         #main { display: none; position: relative; z-index: 2; }
         #main.show { display: block; }
 
@@ -443,8 +447,7 @@
     <!-- CONVITE PRINCIPAL -->
     <div id="main">
         <!-- MENU -->
-        <nav class="fixed top-0 left-0 right-0 z-50 py-3 px-4 border-b"
-             style="background-color: rgba(26,26,24,0.96); border-color: rgba(176,137,79,0.4);">
+        <nav id="site-nav" class="fixed top-0 left-0 right-0 z-50 py-3 px-4 border-b">
             <div class="container mx-auto flex items-center justify-between md:justify-center">
                 <!-- monograma (só no celular) -->
                 <span class="font-display md:hidden" style="color:var(--ouro-luz); font-size:1.1rem; font-weight:600">E &amp; A</span>
@@ -1275,6 +1278,15 @@
             });
         }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
         document.querySelectorAll('.observe-me').forEach(el => observer.observe(el));
+
+        // ---------- Nav transparente no topo, sólida ao rolar ----------
+        (function navScroll() {
+            const nav = document.getElementById('site-nav');
+            if (!nav) return;
+            const update = () => nav.classList.toggle('scrolled', window.scrollY > 40);
+            window.addEventListener('scroll', update, { passive: true });
+            update();
+        })();
 
         // ---------- Reserve a data (links de agenda) ----------
         function pad(n) { return String(n).padStart(2, '0'); }
