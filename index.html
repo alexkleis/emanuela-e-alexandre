@@ -748,6 +748,10 @@
 
                     <!-- Botão único de confirmação -->
                     <button id="rsvp-submit" onclick="RSVP.submit()" class="btn-refined w-full" style="font-size:0.95rem; padding:1rem">Confirmar presença</button>
+                    <div id="rsvp-retry" style="display:none" class="mt-4 p-4 rounded text-center">
+                        <p class="text-sm mb-3" style="color:#b07a6a">Não consegui confirmar agora. Verifique a internet e tente de novo.</p>
+                        <button id="rsvp-retry-btn" onclick="RSVP.submit()" class="btn-refined">Tentar de novo</button>
+                    </div>
                     <p id="rsvp-hint" class="text-center text-sm mt-4" style="color:var(--musgo)">Selecione uma opção acima e confirme.</p>
                     </div><!-- /rsvp-form -->
 
@@ -926,6 +930,8 @@
             "Confira os números e toque em Confirmar presença.": "Check the numbers and tap Confirm attendance.",
             "Toque em Confirmar presença para avisar que não poderá ir.": "Tap Confirm attendance to let us know you can't make it.",
             "Enviando...": "Sending...",
+            "Não consegui confirmar agora. Verifique a internet e tente de novo.": "We couldn't confirm just now. Check your connection and try again.",
+            "Tentar de novo": "Try again",
             "Presença confirmada!": "Attendance confirmed!",
             "Obrigado! Mal podemos esperar para celebrar com vocês.": "Thank you! We can't wait to celebrate with you.",
             "Que pena!": "We'll miss you!",
@@ -1025,6 +1031,7 @@
         }
         const GUEST = {
             name: (_params.get('convidado') || _params.get('c') || '').trim(),
+            id: (_params.get('id') || '').trim(),
             // adultos: usa ?adultos= ; se vier o antigo ?max= usa ele; senão 2
             adults: Math.max(1, _intParam(['adultos', 'a'], _intParam(['max', 'n'], 2))),
             // crianças: usa ?criancas= ; senão 0
@@ -1412,6 +1419,7 @@
             }
             function edit() {
                 document.getElementById('rsvp-success').style.display = 'none';
+                document.getElementById('rsvp-retry').style.display = 'none';
                 document.getElementById('rsvp-form').style.display = 'block';
                 const btn = document.getElementById('rsvp-submit');
                 btn.disabled = false;
@@ -1433,72 +1441,140 @@
                 form.submit();
                 setTimeout(() => form.remove(), 2000);
             }
-            function submit() {
+            function makeToken() {
+                return 'tk' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+            }
+            function delay(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+            // Consulta a planilha por id (com fallback por nome). Usa JSONP (<script>)
+            // para evitar CORS; resolve o objeto do doGet ou null (degrada em silêncio).
+            function remoteCheck(id, name) {
+                return new Promise(function (resolve) {
+                    if (!CONFIG.googleSheetUrl || (!id && !name)) { resolve(null); return; }
+                    const cbName = '__rsvpCheck';
+                    let done = false;
+                    const s = document.createElement('script');
+                    function finish(val) { if (done) return; done = true; resolve(val); try { s.remove(); } catch (e) {} window[cbName] = undefined; }
+                    window[cbName] = function (data) { finish(data); };
+                    s.onerror = function () { finish(null); };
+                    // Carregou mas não chamou o callback (ex.: página de erro = sem doGet):
+                    // o JSONP válido executa o callback ANTES do onload, então aqui já é nulo.
+                    s.onload = function () { setTimeout(function () { finish(null); }, 150); };
+                    let q = CONFIG.googleSheetUrl + '?action=check&callback=' + cbName;
+                    if (id) q += '&id=' + encodeURIComponent(id);
+                    if (name) q += '&nome=' + encodeURIComponent(name);
+                    s.src = q;
+                    document.body.appendChild(s);
+                    setTimeout(function () { finish(null); }, 6000);
+                });
+            }
+
+            // Envia e confirma relendo a planilha.
+            //  - Com o Apps Script v2: exige que o token gravado bata com o enviado
+            //    (verificação forte). Se a checagem responder mas não bater → falha (retry).
+            //  - Com doGet antigo (sem token): aceita a linha confirmada.
+            //  - Sem doGet / sem internet de leitura (checagem nunca responde): assume
+            //    otimista, como o site antigo — assim nada quebra antes do redeploy do v2.
+            function trySendVerified(payload) {
+                return (async function () {
+                    let reached = false, posts = 0;
+                    sendToSheet(payload); posts++;                 // envia uma vez
+                    const polls = [1500, 3000, 4000];
+                    for (let i = 0; i < polls.length; i++) {
+                        await delay(polls[i]);
+                        const data = await remoteCheck(payload.id, payload.nome);
+                        if (data) {
+                            reached = true;
+                            if (data.confirmed && (!data.token || String(data.token) === String(payload.token))) return true;
+                            if (posts < 2) { sendToSheet(payload); posts++; }   // reenvia 1x se respondeu mas não registrou
+                        }
+                    }
+                    // Checagem nunca respondeu (doGet ausente/offline) → assume otimista
+                    // (igual ao site antigo). Respondeu mas nunca confirmou → falha real.
+                    return !reached;
+                })();
+            }
+
+            const PENDING_KEY = 'mw_rsvp_pending_' + (GUEST.id || GUEST.name || 'self').toLowerCase().replace(/\s+/g, '_');
+
+            function showSending() {
+                document.getElementById('rsvp-retry').style.display = 'none';
+                const btn = document.getElementById('rsvp-submit');
+                btn.disabled = true; btn.textContent = t('Enviando...');
+            }
+            function showRetry() {
+                document.getElementById('rsvp-retry').style.display = 'block';
+                const btn = document.getElementById('rsvp-submit');
+                btn.disabled = false; btn.textContent = t('Confirmar presença');
+            }
+
+            async function submit() {
                 const name = (document.getElementById('rsvp-guest').value || '').trim();
                 const note = (document.getElementById('rsvp-msg').value || '').trim();
                 if (attending === null) { alert(LANG === 'en' ? 'Please choose "Yes" or "No" first.' : 'Escolha "Sim, vou comparecer" ou "Não poderei ir" primeiro.'); return; }
                 if (!name) { alert(LANG === 'en' ? 'Please enter your name.' : 'Por favor, digite o seu nome.'); return; }
 
-                const btn = document.getElementById('rsvp-submit');
-                btn.disabled = true;
-                btn.textContent = t('Enviando...');
-
-                sendToSheet({
-                    evento: CONFIG.coupleNames, nome: name,
+                const payload = {
+                    id: GUEST.id, evento: CONFIG.coupleNames, nome: name,
                     presenca: attending ? 'Sim' : 'Não',
                     adultos: attending ? adults : 0,
                     criancas: attending ? children : 0,
-                    mensagem: note, idioma: LANG,
+                    mensagem: note, idioma: LANG, token: makeToken(),
                     enviadoEm: new Date().toLocaleString('pt-BR')
-                });
+                };
 
-                try { localStorage.setItem(STORE_KEY, JSON.stringify({ attending, adults, children, note, name })); } catch (e) {}
-                setTimeout(() => showSuccess(false), 400);
+                showSending();
+                const ok = await trySendVerified(payload);
+                if (ok) {
+                    try { localStorage.removeItem(PENDING_KEY); } catch (e) {}
+                    try { localStorage.setItem(STORE_KEY, JSON.stringify({ attending, adults, children, note, name })); } catch (e) {}
+                    showSuccess(false);
+                } else {
+                    try { localStorage.setItem(PENDING_KEY, JSON.stringify(payload)); } catch (e) {}
+                    showRetry();
+                }
             }
 
-            // Consulta a planilha (fonte da verdade) se este convidado já confirmou.
-            // Usa JSONP (<script>) para evitar CORS; degrada em silêncio se a planilha
-            // ainda não tiver o doGet ou se não houver internet.
-            function remoteCheck(name) {
-                return new Promise(function (resolve) {
-                    if (!CONFIG.googleSheetUrl || !name) { resolve(null); return; }
-                    const cbName = '__rsvpCheck';
-                    let done = false;
-                    const s = document.createElement('script');
-                    function cleanup() { try { s.remove(); } catch (e) {} try { delete window[cbName]; } catch (e) { window[cbName] = undefined; } }
-                    window[cbName] = function (data) { if (done) return; done = true; resolve(data); cleanup(); };
-                    s.onerror = function () { if (done) return; done = true; resolve(null); cleanup(); };
-                    s.src = CONFIG.googleSheetUrl + '?action=check&nome=' + encodeURIComponent(name) + '&callback=' + cbName;
-                    document.body.appendChild(s);
-                    setTimeout(function () { if (done) return; done = true; resolve(null); cleanup(); }, 7000);
-                });
-            }
-
-            // Se já confirmou antes: mostra confirmado + botão Editar.
-            // 1º tenta o registro local (instantâneo); senão pergunta à planilha.
+            // Se já confirmou antes: mostra confirmado + Editar. Também reenvia
+            // confirmações pendentes (que falharam antes) em segundo plano.
             (function restore() {
                 let saved = null;
                 try { saved = JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) {}
                 if (saved && typeof saved.attending === 'boolean') {
                     applyState(saved);
                     showSuccess(true);
-                    return;
                 }
-                if (!GUEST.name) return;
-                remoteCheck(GUEST.name).then(function (data) {
-                    if (!data || !data.confirmed) return;
-                    const att = String(data.presenca || '').trim().toLowerCase() === 'sim';
-                    const st = {
-                        attending: att,
-                        adults: parseInt(data.adultos, 10) || GUEST.adults,
-                        children: parseInt(data.criancas, 10) || 0,
-                        note: data.mensagem || '',
-                        name: GUEST.name
-                    };
-                    applyState(st);
-                    showSuccess(true);
-                    try { localStorage.setItem(STORE_KEY, JSON.stringify(st)); } catch (e) {}
-                });
+                let pending = null;
+                try { pending = JSON.parse(localStorage.getItem(PENDING_KEY)); } catch (e) {}
+                if (pending && pending.token) {
+                    trySendVerified(pending).then(function (ok) {
+                        if (!ok) return;
+                        try { localStorage.removeItem(PENDING_KEY); } catch (e) {}
+                        try {
+                            localStorage.setItem(STORE_KEY, JSON.stringify({
+                                attending: pending.presenca === 'Sim',
+                                adults: +pending.adultos, children: +pending.criancas,
+                                note: pending.mensagem, name: pending.nome
+                            }));
+                        } catch (e) {}
+                    });
+                }
+                if (!saved && (GUEST.id || GUEST.name)) {
+                    remoteCheck(GUEST.id, GUEST.name).then(function (data) {
+                        if (!data || !data.confirmed) return;
+                        const att = String(data.presenca || '').trim().toLowerCase() === 'sim';
+                        const st = {
+                            attending: att,
+                            adults: parseInt(data.adultos, 10) || GUEST.adults,
+                            children: parseInt(data.criancas, 10) || 0,
+                            note: data.mensagem || '',
+                            name: GUEST.name
+                        };
+                        applyState(st);
+                        showSuccess(true);
+                        try { localStorage.setItem(STORE_KEY, JSON.stringify(st)); } catch (e) {}
+                    });
+                }
             })();
 
             return { setAttending, adjust, submit, edit };
