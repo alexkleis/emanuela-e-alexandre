@@ -245,15 +245,10 @@
         /* selo flutuante */
         .seal-float { position: relative; z-index: 4; animation: seal-bob 3.2s ease-in-out infinite; }
         @keyframes seal-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
-        .env-seal {
-            display: flex; align-items: center; justify-content: center;
-            width: 150px; height: 150px; border-radius: 50%; color: var(--ouro-luz);
-            background: radial-gradient(circle at 36% 30%, #3f3d38 0%, #1c1c1a 62%, #0e0e0c 100%);
-            box-shadow: inset 0 0 26px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(232,206,148,0.18), 0 14px 30px rgba(22,22,20,0.45);
-            position: relative;
+        .env-seal-img {
+            display: block; width: clamp(160px, 48vw, 210px); height: auto;
+            filter: drop-shadow(0 16px 28px rgba(18,16,12,0.55));
         }
-        .env-seal::before { content: ''; position: absolute; inset: 8px; border-radius: 50%; border: 1px solid rgba(232,206,148,0.55); }
-        .env-seal svg { width: 128px; height: 128px; display: block; }
 
         /* abertura: selo dá zoom e some; nome e dica somem rápido; painéis abrem */
         @keyframes scale-out-center { 0% { transform: scale(1); opacity: 1; } 45% { transform: scale(1.18); opacity: 1; } 100% { transform: scale(0.15); opacity: 0; } }
@@ -400,45 +395,7 @@
 
         <!-- Selo de cera flutuante (dá zoom e some ao abrir) -->
         <div class="seal-float">
-            <span class="env-seal" aria-hidden="true">
-                <svg viewBox="0 0 120 120">
-                    <defs>
-                        <linearGradient id="seal-gold" x1="0" y1="0" x2="0.2" y2="1">
-                            <stop offset="0"    stop-color="#F6E7BC"/>
-                            <stop offset="0.42" stop-color="#E0C173"/>
-                            <stop offset="0.7"  stop-color="#C49C4B"/>
-                            <stop offset="1"    stop-color="#9C7838"/>
-                        </linearGradient>
-                        <path id="seal-top-arc" d="M 23,60 A 37,37 0 0 1 97,60"/>
-                        <path id="seal-bot-arc" d="M 26,60 A 34,34 0 0 0 94,60"/>
-                    </defs>
-                    <circle cx="60" cy="60" r="53" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-dasharray="0.4 4.15" stroke-linecap="round" opacity="0.6"/>
-                    <circle cx="60" cy="60" r="46.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.45"/>
-                    <text fill="currentColor" font-family="'Cormorant Garamond', serif" font-size="5.9" font-weight="600" letter-spacing="0.35">
-                        <textPath id="seal-top" href="#seal-top-arc" startOffset="50%" text-anchor="middle">EMANUELA &amp; ALEXANDRE</textPath>
-                    </text>
-                    <text fill="currentColor" font-family="'Cormorant Garamond', serif" font-size="8" font-weight="600" letter-spacing="2.4">
-                        <textPath id="seal-date" href="#seal-bot-arc" startOffset="50%" text-anchor="middle">24 · 10 · 2026</textPath>
-                    </text>
-                    <path d="M 13.5,60 l 2.2,-2.2 2.2,2.2 -2.2,2.2 z" fill="currentColor"/>
-                    <path d="M 102.1,60 l 2.2,-2.2 2.2,2.2 -2.2,2.2 z" fill="currentColor"/>
-                    <text y="72.4" text-anchor="middle" font-family="'Fraunces', serif" fill="#0c0c0b" opacity="0.5">
-                        <tspan x="60.7">
-                            <tspan id="seal-i1b" font-size="42" font-weight="600">E</tspan>
-                            <tspan font-size="27" font-style="italic" font-weight="400" dx="1" dy="-4">&amp;</tspan>
-                            <tspan id="seal-i2b" font-size="42" font-weight="600" dx="1" dy="4">A</tspan>
-                        </tspan>
-                    </text>
-                    <text y="71.6" text-anchor="middle" font-family="'Fraunces', serif" fill="url(#seal-gold)">
-                        <tspan x="60">
-                            <tspan id="seal-i1" font-size="42" font-weight="600">E</tspan>
-                            <tspan font-size="27" font-style="italic" font-weight="400" dx="1" dy="-4">&amp;</tspan>
-                            <tspan id="seal-i2" font-size="42" font-weight="600" dx="1" dy="4">A</tspan>
-                        </tspan>
-                    </text>
-                </svg>
-            </span>
+            <img src="seal-web.png" class="env-seal-img" alt="Selo Emanuela & Alexandre" aria-hidden="true">
         </div>
 
         <p class="open-hint caps mt-10 text-xs" style="color:var(--musgo)">Toque para abrir o convite</p>
@@ -998,22 +955,6 @@
         setText('pix-name', CONFIG.pix.name);
         if (CONFIG.pix.bank) { setText('pix-bank', CONFIG.pix.bank); }
         else { const w = document.getElementById('pix-bank-wrap'); if (w) w.style.display = 'none'; }
-
-        // ---------- Selo: nomes no topo, iniciais (relevo) e data ----------
-        (function buildSeal() {
-            const parts = CONFIG.coupleNames.split('&').map(s => s.trim()).filter(Boolean);
-            if (parts.length === 2) {
-                const a = parts[0].charAt(0).toUpperCase();
-                const b = parts[1].charAt(0).toUpperCase();
-                ['seal-i1', 'seal-i1b'].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = a; });
-                ['seal-i2', 'seal-i2b'].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = b; });
-            }
-            const top = document.getElementById('seal-top');
-            if (top) top.textContent = CONFIG.coupleNames.toUpperCase();
-            const d = CONFIG.date;
-            const sd = document.getElementById('seal-date');
-            if (sd) sd.textContent = `${pad(d.day)} · ${pad(d.month)} · ${d.year}`;
-        })();
 
         // ---------- Convidado específico (lido do link) ----------
         // Cada convidado recebe um link com o nome e quantos lugares foram
