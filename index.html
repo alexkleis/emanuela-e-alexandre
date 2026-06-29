@@ -1599,8 +1599,8 @@
        // ===== CONFIG (preencher) =====
        var NOIVOS_EMAIL = ['alexkleis@gmail.com', 'emanuelacsantos@gmail.com'];
        var WHATS = [
-         { phone: '5541999410707', apikey: 'COLOQUE_A_APIKEY_DO_ALEXANDRE' },
-         { phone: '5541XXXXXXXXX', apikey: 'COLOQUE_A_APIKEY_DA_EMANUELA' }
+         { phone: '5541999410707', apikey: '' },
+         { phone: '14156529704', apikey: '9007859' }
        ];
        // Colunas 1-based: A..J
        var COL = { data:1, nome:2, presenca:3, adultos:4, criancas:5, mensagem:6, evento:7, atualizado:8, token:9, id:10 };
@@ -1666,10 +1666,10 @@
          for (var i = 0; i < WHATS.length; i++) {
            try {
              var w = WHATS[i];
-             if (!w.apikey || w.apikey.indexOf('COLOQUE') === 0) continue;
-             var url = 'https://api.callmebot.com/whatsapp.php?phone=' + encodeURIComponent(w.phone)
+             if (!w.apikey || String(w.apikey).indexOf('COLOQUE') === 0) continue;
+             var url = 'https://api.callmebot.com/whatsapp.php?phone=' + encodeURIComponent(String(w.phone))
                + '&text=' + encodeURIComponent('Nova confirmacao:\n' + resumo)
-               + '&apikey=' + encodeURIComponent(w.apikey);
+               + '&apikey=' + encodeURIComponent(String(w.apikey));
              UrlFetchApp.fetch(url, { muteHttpExceptions: true });
            } catch (err2) { Logger.log('whats falhou: ' + err2); }
          }
