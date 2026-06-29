@@ -1456,14 +1456,49 @@
                 setTimeout(() => showSuccess(false), 400);
             }
 
-            // Se já confirmou antes (neste aparelho/navegador): mostra confirmado + botão Editar
+            // Consulta a planilha (fonte da verdade) se este convidado já confirmou.
+            // Usa JSONP (<script>) para evitar CORS; degrada em silêncio se a planilha
+            // ainda não tiver o doGet ou se não houver internet.
+            function remoteCheck(name) {
+                return new Promise(function (resolve) {
+                    if (!CONFIG.googleSheetUrl || !name) { resolve(null); return; }
+                    const cbName = '__rsvpCheck';
+                    let done = false;
+                    const s = document.createElement('script');
+                    function cleanup() { try { s.remove(); } catch (e) {} try { delete window[cbName]; } catch (e) { window[cbName] = undefined; } }
+                    window[cbName] = function (data) { if (done) return; done = true; resolve(data); cleanup(); };
+                    s.onerror = function () { if (done) return; done = true; resolve(null); cleanup(); };
+                    s.src = CONFIG.googleSheetUrl + '?action=check&nome=' + encodeURIComponent(name) + '&callback=' + cbName;
+                    document.body.appendChild(s);
+                    setTimeout(function () { if (done) return; done = true; resolve(null); cleanup(); }, 7000);
+                });
+            }
+
+            // Se já confirmou antes: mostra confirmado + botão Editar.
+            // 1º tenta o registro local (instantâneo); senão pergunta à planilha.
             (function restore() {
                 let saved = null;
                 try { saved = JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) {}
                 if (saved && typeof saved.attending === 'boolean') {
                     applyState(saved);
                     showSuccess(true);
+                    return;
                 }
+                if (!GUEST.name) return;
+                remoteCheck(GUEST.name).then(function (data) {
+                    if (!data || !data.confirmed) return;
+                    const att = String(data.presenca || '').trim().toLowerCase() === 'sim';
+                    const st = {
+                        attending: att,
+                        adults: parseInt(data.adultos, 10) || GUEST.adults,
+                        children: parseInt(data.criancas, 10) || 0,
+                        note: data.mensagem || '',
+                        name: GUEST.name
+                    };
+                    applyState(st);
+                    showSuccess(true);
+                    try { localStorage.setItem(STORE_KEY, JSON.stringify(st)); } catch (e) {}
+                });
             })();
 
             return { setAttending, adjust, submit, edit };
@@ -1479,7 +1514,9 @@
     ============================================================
     1) Crie uma Planilha no Google (sheets.new). Na 1ª linha, coloque os
        cabeçalhos: Data | Nome | Presença | Adultos | Crianças | Mensagem | Evento
-    2) Menu "Extensões" → "Apps Script". Apague o conteúdo e cole isto:
+    2) Menu "Extensões" → "Apps Script". Apague o conteúdo e cole as DUAS funções
+       abaixo (doPost grava a confirmação; doGet permite o convite saber, ao reabrir
+       o link, se aquele convidado JÁ confirmou — mesmo em outro aparelho/navegador):
 
        function doPost(e) {
          var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
@@ -1491,13 +1528,42 @@
          return ContentService.createTextOutput('OK');
        }
 
+       // Consulta se um convidado já confirmou (usado pelo convite via JSONP).
+       function doGet(e) {
+         var p = e.parameter || {};
+         var cb = p.callback || 'callback';
+         var out = { confirmed: false };
+         if (p.action === 'check' && p.nome) {
+           var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+           var data = sheet.getDataRange().getValues();
+           var alvo = String(p.nome).trim().toLowerCase();
+           for (var i = data.length - 1; i >= 1; i--) {   // de baixo p/ cima: pega a ÚLTIMA resposta
+             if (String(data[i][1]).trim().toLowerCase() === alvo) {
+               out = {
+                 confirmed: true,
+                 presenca: data[i][2], adultos: data[i][3],
+                 criancas: data[i][4], mensagem: data[i][5]
+               };
+               break;
+             }
+           }
+         }
+         return ContentService
+           .createTextOutput(cb + '(' + JSON.stringify(out) + ')')
+           .setMimeType(ContentService.MimeType.JAVASCRIPT);
+       }
+
     3) Clique em "Implantar" → "Nova implantação" → engrenagem → "App da Web".
        - Executar como: Eu (sua conta)
        - Quem tem acesso: Qualquer pessoa
        Clique em "Implantar" e autorize.
+       IMPORTANTE: sempre que editar o script, faça uma NOVA implantação
+       (ou "Gerenciar implantações" → editar → Versão: Nova versão), senão as
+       mudanças (como o doGet) não entram no ar.
     4) Copie a URL do App da Web (termina em /exec).
     5) Cole essa URL no CONFIG, no campo googleSheetUrl: "https://script.google.com/macros/s/AKfycbzmSym9Cort4t5qtaJjKvmk6hK4AaVqWeGIrkkXT86u8BG7skJkQzggdK9p9oF2-X0vdg/exec"
-    Pronto! Cada "Confirmar presença" vira uma linha nova na planilha.
+    Pronto! Cada "Confirmar presença" vira uma linha nova na planilha, e ao reabrir
+    o link o convite mostra "Você já confirmou!" consultando a própria planilha.
     ============================================================
     -->
 </body>
